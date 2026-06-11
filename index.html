@@ -1,0 +1,2569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>麦田 · 自由，自主，自洽</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --wheat: #F5E6C8;
+      --earth: #8B7355;
+      --leaf: #5B8C5A;
+      --sky: #87CEEB;
+      --warm: #f5f0e8;
+      --card-bg: #fefcf9;
+      --text: #3D3D3D;
+      --text-light: #777;
+      --radius: 16px;
+    }
+
+    body {
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--warm);
+      color: var(--text);
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+    section { scroll-margin-top: 80px; }
+
+    /* ========== NAV ========== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: rgba(255,248,240,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 40px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
+    .nav-logo { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: 2px; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--text-light);
+      font-size: 14px; letter-spacing: 1px;
+      transition: color 0.3s;
+      cursor: pointer;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--earth); font-weight: 600; }
+
+    /* ========== HERO ========== */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Photo flowing background - 3 rows, different speeds & directions */
+    .hero-photos {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+    .photo-row {
+      height: 33.33%;
+      overflow: hidden;
+      position: relative;
+    }
+    .photo-track {
+      display: flex;
+      height: 100%;
+      will-change: transform;
+    }
+    .photo-track img {
+      height: 100%;
+      width: auto;
+      display: block;
+      flex-shrink: 0;
+      object-fit: cover;
+      filter: brightness(0.85);
+    }
+    /* Row 1 - scroll right, fast */
+    .track-1 {
+      animation: scrollRight 60s linear infinite;
+    }
+    /* Row 2 - scroll left, medium */
+    .track-2 {
+      animation: scrollLeft 75s linear infinite;
+    }
+    /* Row 3 - scroll right, slow */
+    .track-3 {
+      animation: scrollRight 90s linear infinite;
+    }
+
+    @keyframes scrollRight {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes scrollLeft {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Dark overlay */
+    .hero-overlay {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.55) 0%,
+        rgba(0,0,0,0.45) 40%,
+        rgba(0,0,0,0.55) 100%
+      );
+      z-index: 1;
+    }
+
+    /* Hero content on top of photos */
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 120px 40px 80px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      color: rgba(255,255,255,0.9);
+      font-size: 13px; letter-spacing: 3px;
+      padding: 6px 20px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 32px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .hero h1 span { color: #7EC882; }
+    .hero-sub {
+      font-size: 18px; color: rgba(255,255,255,0.8);
+      max-width: 520px; margin-bottom: 48px;
+      line-height: 1.8;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+    }
+    .hero-cta {
+      display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    }
+    .btn {
+      padding: 14px 36px; border-radius: 40px;
+      font-size: 15px; font-weight: 600;
+      letter-spacing: 1px; cursor: pointer;
+      border: none; transition: all 0.3s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-primary {
+      background: #5B8C5A; color: #fff;
+    }
+    .btn-primary:hover { background: #4A7A49; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(91,140,90,0.4); }
+    .btn-outline {
+      background: transparent; color: #fff;
+      border: 2px solid rgba(255,255,255,0.7);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.15); color: #fff; border-color: #fff; }
+
+    /* ========== SECTION COMMON ========== */
+    section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; scroll-margin-top: 70px; }
+    .hero { max-width: 100%; padding: 0; }
+    .section-tag {
+      font-size: 12px; letter-spacing: 4px; color: var(--leaf);
+      text-transform: uppercase; margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700; color: var(--earth);
+      margin-bottom: 16px; line-height: 1.3;
+    }
+    .section-desc {
+      font-size: 16px; color: var(--text-light);
+      max-width: 560px; margin-bottom: 60px; line-height: 1.8;
+    }
+
+    /* ========== ABOUT ========== */
+    #about { padding-top: 140px; }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .about-visual {
+      background: linear-gradient(135deg, var(--wheat) 0%, #E8D5B7 100%);
+      border-radius: var(--radius);
+      height: 380px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 80px; color: var(--earth); opacity: 0.4;
+    }
+    .about-text .star-list { list-style: none; margin-top: 28px; }
+    .about-text .star-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-size: 15px; color: var(--text);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .about-text .star-list li::before {
+      content: '🌱'; font-size: 18px;
+    }
+
+    /* ========== PROJECT CARD ========== */
+    .project-section { margin-bottom: 80px; }
+    .project-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+    .project-card-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      min-height: 360px;
+    }
+    .project-visual {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 64px; color: #fff; opacity: 0.5;
+    }
+    .project-visual.commercial { background: linear-gradient(135deg, #87CEEB 0%, #5BA3D9 100%); }
+    .project-visual.rural { background: linear-gradient(135deg, var(--leaf) 0%, #3D7A3D 100%); }
+    .project-info { padding: 48px; display: flex; flex-direction: column; justify-content: center; }
+    .project-type {
+      font-size: 12px; letter-spacing: 3px; margin-bottom: 12px;
+      padding: 4px 12px; border-radius: 12px;
+      display: inline-block; width: fit-content;
+    }
+    .project-type.commercial-type { background: #E8F4FD; color: #3A8BBF; }
+    .project-type.rural-type { background: #E8F5E9; color: #4A7A49; }
+    .project-info h3 { font-size: 24px; font-weight: 700; color: var(--earth); margin-bottom: 16px; }
+    .project-info p { font-size: 15px; color: var(--text-light); line-height: 1.9; margin-bottom: 20px; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .project-tags span {
+      background: var(--warm); color: var(--text-light);
+      font-size: 13px; padding: 4px 14px; border-radius: 20px;
+    }
+
+    /* ========== STORIES ========== */
+    #stories .stories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 28px;
+    }
+    .story-card {
+      background: var(--card-bg); border-radius: var(--radius);
+      overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    .story-card:hover { transform: translateY(-3px); }
+    .story-cover {
+      height: 180px; display: flex; align-items: center; justify-content: center;
+      font-size: 48px; color: #fff; opacity: 0.6;
+    }
+    .story-cover.c1 { background: linear-gradient(135deg, #FFB347 0%, #FF6B6B 100%); }
+    .story-cover.c2 { background: linear-gradient(135deg, var(--sky) 0%, #5BA3D9 100%); }
+    .story-cover.c3 { background: linear-gradient(135deg, var(--leaf) 0%, #3D7A3D 100%); }
+    .story-body { padding: 24px; }
+    .story-body .story-meta { font-size: 12px; color: var(--text-light); margin-bottom: 8px; letter-spacing: 1px; }
+    .story-body h4 { font-size: 17px; font-weight: 600; color: var(--earth); margin-bottom: 8px; }
+    .story-body p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+
+    /* ========== INTERACT - 动态墙 ========== */
+    #interact { }
+
+    /* 发动态表单 */
+    .feed-form {
+      background: var(--card-bg); border-radius: var(--radius); padding: 28px;
+      margin-bottom: 32px; box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+    }
+    .feed-form-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .feed-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--wheat), var(--leaf));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .feed-form textarea {
+      width: 100%; border: 1.5px solid #eee; border-radius: 12px;
+      padding: 16px; font-size: 15px; font-family: inherit;
+      resize: vertical; min-height: 90px; transition: border-color 0.3s;
+      line-height: 1.7;
+    }
+    .feed-form textarea:focus { outline: none; border-color: var(--leaf); }
+    .feed-form-actions {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 16px; flex-wrap: wrap; gap: 12px;
+    }
+    .feed-form-left { display: flex; align-items: center; gap: 12px; }
+    .feed-name-input {
+      border: 1.5px solid #eee; border-radius: 20px;
+      padding: 8px 16px; font-size: 14px; width: 150px;
+      font-family: inherit; transition: border-color 0.3s;
+    }
+    .feed-name-input:focus { outline: none; border-color: var(--leaf); }
+    .feed-img-btn {
+      background: none; border: 1.5px dashed #ccc; border-radius: 20px;
+      padding: 8px 16px; font-size: 13px; cursor: pointer;
+      color: var(--text-light); transition: all 0.3s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .feed-img-btn:hover { border-color: var(--leaf); color: var(--leaf); }
+    .feed-img-preview {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+    }
+    .feed-img-preview img {
+      max-height: 120px; border-radius: 12px; display: block;
+    }
+    .feed-img-thumb-wrap {
+      position: relative; display: inline-block;
+    }
+    .feed-img-remove {
+      position: absolute; top: -8px; right: -8px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #e74c3c; color: #fff; border: none;
+      font-size: 14px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+    }
+
+    /* 动态卡片 */
+    .feed-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 28px;
+      padding: 24px 0 40px;
+    }
+    .feed-card {
+      padding: 20px 18px 28px;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: default;
+      border-radius: 2px 2px 8px 2px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1);
+      border: none;
+      background: #FFF9C4;
+      font-family: "PingFang SC", "Hiragino Sans GB", sans-serif;
+      transform: rotate(var(--r, 0deg));
+      transform-origin: center center;
+    }
+    .feed-card:hover {
+      transform: rotate(var(--r, 0deg)) translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.12);
+      z-index: 2;
+    }
+    /* 便利贴顶部胶带效果 */
+    .feed-card::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-2deg);
+      width: 48px;
+      height: 16px;
+      background: rgba(255,255,255,0.55);
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      z-index: 1;
+    }
+    /* 便利贴颜色变体 */
+    .note-yellow  { background: #FFF9C4; }
+    .note-pink    { background: #FCE4EC; }
+    .note-blue    { background: #E3F2FD; }
+    .note-green   { background: #E8F5E9; }
+    .note-orange  { background: #FFF3E0; }
+    .note-purple  { background: #F3E5F5; }
+    .note-teal    { background: #E0F2F1; }
+    .feed-card-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .feed-card-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      flex-shrink: 0; display: flex; align-items: center;
+      justify-content: center; font-size: 22px;
+    }
+    .feed-card-info { flex: 1; }
+    .feed-card-name { font-weight: 600; font-size: 15px; color: var(--earth); }
+    .feed-card-time { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+    .feed-card-body {
+      font-size: 15px; color: var(--text); line-height: 1.9;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .feed-card-image { margin-top: 16px; }
+    .feed-card-image img {
+      max-width: 100%; max-height: 360px; border-radius: 12px;
+      display: block; cursor: pointer;
+    }
+    .feed-card-images { margin-top: 16px; }
+    .feed-card-images.multi {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    .feed-card-images.multi .feed-card-image { margin-top: 0; }
+    .feed-card-images.multi .feed-card-image img { max-height: 240px; width: 100%; object-fit: cover; }
+    .feed-card-bar {
+      display: flex; align-items: center; gap: 24px;
+      margin-top: 20px; padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.04);
+    }
+    .feed-like-btn, .feed-comment-btn {
+      background: none; border: none; font-size: 14px;
+      cursor: pointer; color: var(--text-light);
+      display: flex; align-items: center; gap: 4px;
+      padding: 4px 8px; border-radius: 12px; transition: all 0.2s;
+    }
+    .feed-like-btn:hover { background: rgba(91,140,90,0.08); color: var(--leaf); }
+    .feed-like-btn.liked { color: #e74c3c; }
+    .feed-comment-btn:hover { background: rgba(91,140,90,0.08); color: var(--leaf); }
+
+    /* 评论区 */
+    .feed-comments {
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid rgba(0,0,0,0.04);
+      display: none;
+    }
+    .feed-comments.show { display: block; }
+    .comment-item {
+      display: flex; gap: 10px; padding: 10px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+    }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      flex-shrink: 0; display: flex; align-items: center;
+      justify-content: center; font-size: 15px;
+      background: var(--warm);
+    }
+    .comment-body { flex: 1; }
+    .comment-name { font-weight: 600; font-size: 13px; color: var(--earth); }
+    .comment-text { font-size: 14px; color: var(--text); line-height: 1.6; margin-top: 2px; }
+    .comment-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .comment-form {
+      display: flex; gap: 10px; margin-top: 12px; align-items: flex-start;
+    }
+    .comment-input {
+      flex: 1; border: 1.5px solid #eee; border-radius: 12px;
+      padding: 8px 14px; font-size: 13px; font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    .comment-input:focus { outline: none; border-color: var(--leaf); }
+    .comment-send {
+      background: var(--leaf); color: #fff; border: none;
+      border-radius: 12px; padding: 8px 16px; font-size: 13px;
+      cursor: pointer; transition: background 0.3s; flex-shrink: 0;
+    }
+    .comment-send:hover { background: #4A7A49; }
+    .feed-empty {
+      text-align: center; padding: 80px 20px; color: var(--text-light);
+      font-size: 15px; line-height: 2;
+    }
+    .feed-empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .feed-loading { text-align: center; padding: 40px; color: var(--text-light); }
+
+    /* ========== INTERACT TABS ========== */
+    .interact-tabs {
+      display: flex; gap: 8px; margin-bottom: 40px;
+      border-bottom: 2px solid rgba(0,0,0,0.06);
+      padding-bottom: 0;
+    }
+    .interact-tab {
+      padding: 12px 28px; font-size: 15px; font-weight: 600;
+      border: none; background: none; cursor: pointer;
+      color: var(--text-light); position: relative;
+      transition: color 0.3s; letter-spacing: 0.5px;
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+    }
+    .interact-tab.active { color: var(--earth); border-bottom-color: var(--earth); }
+    .interact-tab:hover { color: var(--earth); }
+    .interact-panel { display: none; }
+    .interact-panel.active { display: block; }
+
+    /* ========== 烦恼博物馆 ========== */
+    .museum-intro {
+      background: linear-gradient(135deg, #f5f0e8 0%, #e8f0ea 100%);
+      border-radius: var(--radius); padding: 32px 36px;
+      margin-bottom: 40px; display: flex; align-items: flex-start; gap: 20px;
+    }
+    .museum-intro-icon { font-size: 48px; flex-shrink: 0; }
+    .museum-intro-text h3 {
+      font-size: 22px; font-weight: 700; color: var(--earth);
+      margin-bottom: 8px; letter-spacing: 0.5px;
+    }
+    .museum-intro-text p {
+      font-size: 14px; color: var(--text-light); line-height: 1.8;
+    }
+
+    /* 投入烦恼表单 */
+    .museum-submit-form {
+      background: var(--card-bg); border-radius: var(--radius); padding: 28px;
+      margin-bottom: 36px; box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      border-left: 4px solid var(--wheat);
+    }
+    .museum-submit-form h4 {
+      font-size: 15px; font-weight: 700; color: var(--earth);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .museum-form-row {
+      display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .museum-name-input {
+      border: 1.5px solid #eee; border-radius: 20px;
+      padding: 8px 16px; font-size: 14px; width: 160px;
+      font-family: inherit; transition: border-color 0.3s;
+    }
+    .museum-name-input:focus { outline: none; border-color: var(--leaf); }
+    .museum-anon-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-light); cursor: pointer;
+      padding: 8px 0;
+    }
+    .museum-anon-label input { cursor: pointer; }
+    .museum-title-input {
+      width: 100%; border: 1.5px solid #eee; border-radius: 12px;
+      padding: 12px 16px; font-size: 15px; font-family: inherit;
+      transition: border-color 0.3s; margin-bottom: 12px;
+    }
+    .museum-title-input:focus { outline: none; border-color: var(--leaf); }
+    .museum-desc-input {
+      width: 100%; border: 1.5px solid #eee; border-radius: 12px;
+      padding: 14px 16px; font-size: 14px; font-family: inherit;
+      resize: vertical; min-height: 80px; transition: border-color 0.3s;
+      line-height: 1.7;
+    }
+    .museum-desc-input:focus { outline: none; border-color: var(--leaf); }
+    .museum-form-footer {
+      display: flex; justify-content: flex-end; margin-top: 14px;
+    }
+
+    /* 展品网格 */
+    .museum-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .museum-item {
+      background: var(--card-bg); border-radius: var(--radius);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      overflow: hidden; cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+      border: 1.5px solid rgba(0,0,0,0.05);
+    }
+    .museum-item:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.08); }
+    .museum-item-tag {
+      background: var(--earth); color: rgba(255,255,255,0.85);
+      font-size: 11px; letter-spacing: 3px; padding: 7px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .museum-item-tag .item-no { font-weight: 700; color: #fff; }
+    .museum-item-tag .item-anon { font-size: 11px; opacity: 0.7; }
+    .museum-item-body { padding: 20px 20px 16px; }
+    .museum-item-title {
+      font-size: 16px; font-weight: 700; color: var(--earth);
+      margin-bottom: 8px; line-height: 1.5;
+    }
+    .museum-item-desc {
+      font-size: 13px; color: var(--text-light); line-height: 1.7;
+      display: -webkit-box; -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .museum-item-footer {
+      padding: 12px 20px; border-top: 1px solid rgba(0,0,0,0.04);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--text-light);
+    }
+    .museum-item-strategies { display: flex; align-items: center; gap: 4px; }
+    .museum-empty {
+      text-align: center; padding: 80px 20px; color: var(--text-light);
+      font-size: 15px; line-height: 2; grid-column: 1 / -1;
+    }
+    .museum-empty-icon { font-size: 48px; margin-bottom: 16px; }
+
+    /* 烦恼详情弹窗 */
+    .museum-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 999; display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .museum-modal-overlay.open { display: flex; }
+    .museum-modal {
+      background: var(--card-bg); border-radius: var(--radius);
+      max-width: 620px; width: 100%; max-height: 90vh;
+      overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .museum-modal-header {
+      background: var(--earth); color: #fff;
+      padding: 24px 28px 20px;
+    }
+    .museum-modal-no {
+      font-size: 11px; letter-spacing: 3px; opacity: 0.7; margin-bottom: 6px;
+    }
+    .museum-modal-title {
+      font-size: 22px; font-weight: 700; line-height: 1.4;
+    }
+    .museum-modal-meta {
+      font-size: 12px; opacity: 0.65; margin-top: 6px;
+    }
+    .museum-modal-body { padding: 28px; }
+    .museum-modal-desc {
+      font-size: 15px; color: var(--text); line-height: 1.9;
+      margin-bottom: 32px; padding-bottom: 24px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      white-space: pre-wrap;
+    }
+    .museum-strategies-title {
+      font-size: 13px; font-weight: 700; letter-spacing: 2px;
+      color: var(--leaf); text-transform: uppercase; margin-bottom: 16px;
+    }
+    .strategy-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .strategy-item {
+      background: #f9f7f4; border-radius: 12px;
+      padding: 16px 18px; border-left: 3px solid var(--leaf);
+    }
+    .strategy-item-header {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+    }
+    .strategy-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+    .strategy-author { font-weight: 600; font-size: 13px; color: var(--earth); }
+    .strategy-time { font-size: 11px; color: var(--text-light); }
+    .strategy-text { font-size: 14px; color: var(--text); line-height: 1.7; }
+    .strategy-form {
+      background: #f0f5f0; border-radius: 12px; padding: 20px;
+    }
+    .strategy-form h5 {
+      font-size: 14px; font-weight: 700; color: var(--earth);
+      margin-bottom: 14px;
+    }
+    .strategy-form-row {
+      display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
+      align-items: center;
+    }
+    .strategy-name-input {
+      border: 1.5px solid #dde8dd; border-radius: 20px;
+      padding: 8px 14px; font-size: 13px; width: 140px;
+      font-family: inherit; transition: border-color 0.3s;
+      background: var(--card-bg);
+    }
+    .strategy-name-input:focus { outline: none; border-color: var(--leaf); }
+    .strategy-textarea {
+      width: 100%; border: 1.5px solid #dde8dd; border-radius: 12px;
+      padding: 12px 14px; font-size: 14px; font-family: inherit;
+      resize: vertical; min-height: 70px; background: var(--card-bg);
+      transition: border-color 0.3s; line-height: 1.7;
+    }
+    .strategy-textarea:focus { outline: none; border-color: var(--leaf); }
+    .strategy-submit-btn {
+      background: var(--leaf); color: #fff; border: none;
+      border-radius: 20px; padding: 9px 24px; font-size: 13px;
+      cursor: pointer; transition: background 0.3s;
+      margin-top: 10px;
+    }
+    .strategy-submit-btn:hover { background: #4A7A49; }
+    .museum-modal-close {
+      display: block; width: 100%; padding: 14px;
+      background: none; border: none; border-top: 1px solid rgba(0,0,0,0.06);
+      font-size: 14px; color: var(--text-light); cursor: pointer;
+      transition: background 0.2s;
+    }
+    .museum-modal-close:hover { background: #f5f5f5; }
+
+    /* ========== FOOTER ========== */
+    footer {
+      text-align: center; padding: 60px 40px;
+      background: var(--earth); color: rgba(255,255,255,0.7);
+      font-size: 13px; letter-spacing: 1px;
+    }
+    footer .footer-logo { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 12px; letter-spacing: 3px; }
+    footer p { margin-bottom: 6px; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 12px; }
+      section { padding: 60px 20px; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-visual { height: 220px; }
+      .project-card-inner { grid-template-columns: 1fr; }
+      .project-visual { height: 160px; }
+      .hero h1 { font-size: 32px; }
+    }
+
+    /* ========== SCROLL ANIMATION ========== */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ========== 麦田的故事 ========== */
+    .stories-intro {
+      background: linear-gradient(135deg, #f5f0e8 0%, #e8f0ea 100%);
+      border-radius: var(--radius); padding: 32px 36px;
+      margin-bottom: 40px; display: flex; align-items: flex-start; gap: 20px;
+    }
+    .stories-intro-icon { font-size: 48px; flex-shrink: 0; }
+    .stories-intro-text h3 {
+      font-size: 22px; font-weight: 700; color: var(--earth);
+      margin-bottom: 8px; letter-spacing: 0.5px;
+    }
+    .stories-intro-text p {
+      font-size: 14px; color: var(--text-light); line-height: 1.8;
+    }
+    .stories-submit-form {
+      background: var(--card-bg); border-radius: var(--radius); padding: 28px;
+      margin-bottom: 36px; box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      border-left: 4px solid var(--leaf);
+    }
+    .stories-submit-form h4 {
+      font-size: 15px; font-weight: 700; color: var(--earth);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .stories-img-preview {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+    }
+    .stories-list { display: flex; flex-direction: column; gap: 24px; }
+    .story-card {
+      background: var(--card-bg); border-radius: var(--radius); padding: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+      transition: box-shadow 0.3s; cursor: pointer;
+      border-left: 4px solid var(--leaf);
+    }
+    .story-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+    .story-card.official { border-left-color: var(--earth); }
+    .story-card-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .story-card-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      flex-shrink: 0; display: flex; align-items: center;
+      justify-content: center; font-size: 22px;
+    }
+    .story-card-info { flex: 1; }
+    .story-card-name { font-weight: 600; font-size: 15px; color: var(--earth); }
+    .story-card-time { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+    .story-card-badge {
+      font-size: 11px; padding: 2px 10px; border-radius: 10px;
+      background: var(--earth); color: #fff; opacity: 0.8;
+    }
+    .story-card-title {
+      font-size: 18px; font-weight: 700; color: var(--earth);
+      margin-bottom: 10px; line-height: 1.4;
+    }
+    .story-card-body-text {
+      font-size: 15px; color: var(--text); line-height: 1.9;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .story-card-image { margin-top: 16px; }
+    .story-card-image img {
+      max-width: 100%; max-height: 360px; border-radius: 12px; display: block;
+    }
+    .story-card-images { margin-top: 16px; }
+    .story-card-images.multi {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    .story-card-images.multi .story-card-image { margin-top: 0; }
+    .story-card-images.multi .story-card-image img { max-height: 240px; width: 100%; object-fit: cover; }
+    .story-card-bar {
+      display: flex; align-items: center; gap: 24px;
+      margin-top: 20px; padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.04);
+    }
+    .story-like-btn, .story-comment-btn {
+      background: none; border: none; font-size: 14px;
+      cursor: pointer; color: var(--text-light);
+      display: flex; align-items: center; gap: 4px;
+      padding: 4px 8px; border-radius: 12px; transition: all 0.2s;
+    }
+    .story-like-btn:hover { background: rgba(91,140,90,0.08); color: var(--leaf); }
+    .story-like-btn.liked { color: #e74c3c; }
+    .story-comment-btn:hover { background: rgba(91,140,90,0.08); color: var(--leaf); }
+    .story-empty {
+      text-align: center; padding: 80px 20px; color: var(--text-light);
+      font-size: 15px; line-height: 2;
+    }
+    .story-empty-icon { font-size: 48px; margin-bottom: 16px; }
+
+    /* ========== 动态详情弹窗 ========== */
+    .feed-modal-img-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .feed-modal-img-grid img {
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .feed-modal-img-grid img:hover {
+      transform: scale(1.03);
+    }
+    .feed-modal-text {
+      font-size: 15px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-top: 16px;
+      color: var(--text);
+    }
+    .feed-modal-meta {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 8px;
+    }
+    .feed-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .feed-modal-comments-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--earth);
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+    .feed-modal-comment-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    .feed-modal-comment-item:last-child { border-bottom: none; }
+    .feed-modal-comment-body { flex: 1; }
+    .feed-modal-comment-name { font-size: 13px; font-weight: 600; color: var(--earth); }
+    .feed-modal-comment-text { font-size: 14px; color: var(--text); margin-top: 4px; line-height: 1.6; }
+    .feed-modal-comment-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .feed-modal-comment-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      align-items: center;
+    }
+    .feed-modal-comment-input {
+      flex: 1;
+      padding: 8px 14px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 20px;
+      font-size: 13px;
+      outline: none;
+    }
+    .feed-modal-comment-input:focus { border-color: var(--leaf); }
+    .feed-modal-comment-send {
+      background: var(--leaf);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* ========== 照片堆叠效果 ========== */
+    .feed-card-image-stack {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      margin-top: 12px;
+    }
+    .stack-photo {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+    .stack-back2 {
+      background: #f5f0e8;
+      transform: rotate(-4deg) translate(-4px, 4px);
+      z-index: 1;
+    }
+    .stack-back1 {
+      background: #e8f0ea;
+      transform: rotate(2.5deg) translate(3px, -2px);
+      z-index: 2;
+    }
+    .stack-front {
+      z-index: 3;
+      transform: rotate(-1deg) translate(0, 0);
+    }
+    .stack-front img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    /* ========== 用户系统 ========== */
+    .nav-user {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; position: relative;
+    }
+    .nav-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--leaf); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+    }
+    .nav-points {
+      font-size: 13px; color: var(--earth); font-weight: 600;
+    }
+    .nav-login-btn {
+      background: var(--leaf); color: #fff;
+      border: none; border-radius: 20px;
+      padding: 6px 16px; font-size: 13px; cursor: pointer;
+      font-weight: 600;
+    }
+    .nav-login-btn:hover { background: #3d6b3c; }
+    .user-dropdown {
+      position: absolute; top: 100%; right: 0;
+      background: var(--card-bg); border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      min-width: 160px; padding: 8px 0;
+      display: none; z-index: 999;
+    }
+    .user-dropdown.show { display: block; }
+    .user-dropdown-item {
+      display: block; width: 100%; text-align: left;
+      background: none; border: none; padding: 10px 18px;
+      font-size: 14px; cursor: pointer; color: var(--text);
+    }
+    .user-dropdown-item:hover { background: #f5f0e8; }
+
+    /* ========== 登录弹窗 ========== */
+    .auth-modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+    }
+    .auth-modal-overlay.open { display: flex; }
+    .auth-modal {
+      background: var(--card-bg); border-radius: 16px;
+      width: 360px; max-width: 92vw;
+      padding: 36px 32px; position: relative;
+    }
+    .auth-modal-close {
+      position: absolute; top: 12px; right: 16px;
+      background: none; border: none; font-size: 22px;
+      cursor: pointer; color: var(--text-light);
+    }
+    .auth-tabs { display: flex; gap: 0; margin-bottom: 24px; }
+    .auth-tab {
+      flex: 1; padding: 10px; font-size: 15px;
+      background: none; border: none; cursor: pointer;
+      border-bottom: 2px solid transparent;
+      color: var(--text-light); font-weight: 600;
+    }
+    .auth-tab.active {
+      color: var(--leaf); border-bottom-color: var(--leaf);
+    }
+    .auth-form { display: flex; flex-direction: column; gap: 14px; }
+    .auth-input {
+      padding: 12px 16px; border: 1.5px solid rgba(0,0,0,0.1);
+      border-radius: 10px; font-size: 14px; outline: none;
+      width: 100%; box-sizing: border-box;
+    }
+    .auth-input:focus { border-color: var(--leaf); }
+    .auth-submit {
+      background: var(--leaf); color: #fff; border: none;
+      border-radius: 10px; padding: 12px; font-size: 15px;
+      font-weight: 700; cursor: pointer;
+    }
+    .auth-submit:hover { background: #3d6b3c; }
+    .auth-error { color: #e74c3c; font-size: 13px; min-height: 18px; }
+    .auth-hint { font-size: 12px; color: var(--text-light); text-align: center; }
+    /* 头像选择网格 */
+    .avatar-grid {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+      margin-bottom: 8px;
+    }
+    .avatar-opt {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; cursor: pointer;
+      border: 3px solid transparent;
+      background: #f5f0e8;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .avatar-opt:hover { transform: scale(1.15); }
+    .avatar-opt.selected { border-color: var(--leaf); background: #e8f5e9; }
+    /* ========== 用户主页 ========== */
+    .profile-header {
+      background: linear-gradient(135deg, var(--leaf), #2d5a2c);
+      color: #fff; padding: 48px 32px 36px; border-radius: 0 0 24px 24px;
+      text-align: center; margin-bottom: 32px;
+    }
+    .profile-avatar-big {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,255,255,0.25); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 700; margin: 0 auto 16px;
+      border: 3px solid rgba(255,255,255,0.5);
+    }
+    .profile-name { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .profile-bio {
+      font-size: 14px; opacity: 0.85; margin: 6px 0 12px;
+      max-width: 320px; margin-left: auto; margin-right: auto;
+    }
+    .edit-profile-btn {
+      background: rgba(255,255,255,0.2); color: #fff;
+      border: 1px solid rgba(255,255,255,0.4); border-radius: 20px;
+      padding: 6px 18px; font-size: 13px; cursor: pointer;
+      transition: background 0.2s; margin-top: 4px;
+    }
+    .edit-profile-btn:hover { background: rgba(255,255,255,0.35); }
+    .profile-back-btn {
+      position: absolute; top: 20px; left: 20px;
+      background: rgba(255,255,255,0.2); color: #fff;
+      border: 1px solid rgba(255,255,255,0.4); border-radius: 20px;
+      padding: 6px 14px; font-size: 13px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .profile-back-btn:hover { background: rgba(255,255,255,0.35); }
+    .profile-id { font-size: 13px; opacity: 0.7; }
+    .profile-stats {
+      display: flex; justify-content: center; gap: 40px;
+      margin-top: 24px;
+    }
+    .profile-stat { text-align: center; }
+    .profile-stat-num { font-size: 28px; font-weight: 800; }
+    .profile-stat-label { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+    .profile-section { max-width: 700px; margin: 0 auto 32px; padding: 0 20px; }
+    .profile-section-title {
+      font-size: 16px; font-weight: 700; color: var(--earth);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .badges-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 16px;
+    }
+    .badge-item {
+      text-align: center; padding: 16px 8px;
+      background: var(--card-bg); border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      opacity: 0.35; transition: opacity 0.3s;
+    }
+    .badge-item.unlocked { opacity: 1; }
+    .badge-icon { font-size: 32px; margin-bottom: 6px; }
+    .badge-name { font-size: 11px; color: var(--text-light); line-height: 1.3; }
+    .badge-item.unlocked .badge-name { color: var(--earth); font-weight: 600; }
+    .points-history { display: flex; flex-direction: column; gap: 10px; }
+    .points-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--card-bg); border-radius: 10px; padding: 14px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+    .points-item-left { display: flex; align-items: center; gap: 10px; }
+    .points-item-icon { font-size: 20px; }
+    .points-item-desc { font-size: 14px; color: var(--text); }
+    .points-item-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .points-item-val { font-size: 16px; font-weight: 700; }
+    .points-item-val.plus { color: var(--leaf); }
+    .points-item-val.minus { color: #e74c3c; }
+
+    /* ========== 任务中心 ========== */
+    .task-list { display: flex; flex-direction: column; gap: 16px; max-width: 700px; margin: 0 auto; }
+    .task-card {
+      background: var(--card-bg); border-radius: 14px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      border-left: 4px solid var(--leaf);
+    }
+    .task-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .task-title { font-size: 16px; font-weight: 700; color: var(--earth); }
+    .task-points {
+      background: #e8f0ea; color: var(--leaf);
+      font-size: 12px; font-weight: 700; padding: 3px 10px;
+      border-radius: 10px; white-space: nowrap;
+    }
+    .task-desc { font-size: 14px; color: var(--text-light); line-height: 1.7; margin-bottom: 14px; }
+    .task-meta { font-size: 12px; color: var(--text-light); margin-bottom: 14px; }
+    .task-btn {
+      background: var(--leaf); color: #fff; border: none;
+      border-radius: 8px; padding: 8px 20px; font-size: 13px;
+      font-weight: 600; cursor: pointer;
+    }
+    .task-btn:hover { background: #3d6b3c; }
+    .task-btn.done { background: #ccc; cursor: default; }
+    .task-my-list { margin-top: 12px; }
+    .task-my-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.04);
+      font-size: 14px;
+    }
+    .task-status {
+      font-size: 12px; padding: 2px 10px; border-radius: 8px;
+    }
+    .task-status.pending { background: var(--card-bg)3cd; color: #856404; }
+    .task-status.approved { background: #d4edda; color: #155724; }
+    .task-status.rejected { background: #f8d7da; color: #721c24; }
+
+    /* ========== 兑换商店 ========== */
+    .store-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px; max-width: 900px; margin: 0 auto;
+    }
+    .store-item {
+      background: var(--card-bg); border-radius: 14px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      text-align: center; transition: transform 0.2s;
+    }
+    .store-item:hover { transform: translateY(-4px); }
+    .store-item-icon { font-size: 48px; margin-bottom: 12px; }
+    .store-item-name { font-size: 15px; font-weight: 700; color: var(--earth); margin-bottom: 6px; }
+    .store-item-desc { font-size: 12px; color: var(--text-light); margin-bottom: 14px; line-height: 1.5; }
+    .store-item-cost {
+      font-size: 14px; font-weight: 700; color: var(--leaf); margin-bottom: 14px;
+    }
+    .store-btn {
+      background: var(--earth); color: #fff; border: none;
+      border-radius: 8px; padding: 8px 20px; font-size: 13px;
+      font-weight: 600; cursor: pointer; width: 100%;
+    }
+    .store-btn:hover { background: #3d2e1e; }
+    .store-btn.disabled { background: #ccc; cursor: not-allowed; }
+    .store-filter {
+      display: flex; gap: 8px; justify-content: center;
+      margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .store-filter-btn {
+      padding: 6px 16px; border-radius: 16px; border: 1.5px solid rgba(0,0,0,0.1);
+      background: var(--card-bg); font-size: 13px; cursor: pointer; color: var(--text-light);
+    }
+    .store-filter-btn.active { background: var(--leaf); color: #fff; border-color: var(--leaf); }
+
+    /* ========== 兑换弹窗 ========== */
+    .exchange-modal-overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.5); z-index:9999;
+      display:none; align-items:center; justify-content:center;
+    }
+    .exchange-modal-overlay.open { display:flex; }
+    .exchange-modal {
+      background:var(--card-bg); border-radius:16px; width:360px; max-width:92vw;
+      padding:32px; text-align:center; position:relative;
+    }
+    .exchange-modal-icon { font-size:48px; margin-bottom:12px; }
+    .exchange-modal-title { font-size:18px; font-weight:700; color:var(--earth); margin-bottom:8px; }
+    .exchange-modal-desc { font-size:13px; color:var(--text-light); margin-bottom:20px; line-height:1.6; }
+    .exchange-modal-btns { display:flex; gap:10px; }
+    .exchange-modal-btns button { flex:1; padding:10px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; }
+    .exchange-confirm { background:var(--leaf); color:#fff; border:none; }
+    .exchange-cancel { background:#f5f0e8; color:var(--text); border:none; }
+
+    /* ========== 发布需登录提示 ========== */
+    .login-prompt {
+      text-align: center; padding: 24px; color: var(--text-light);
+      font-size: 14px;
+    }
+    .login-prompt button {
+      margin-top: 10px; background: var(--leaf); color: #fff;
+      border: none; border-radius: 8px; padding: 8px 20px;
+      font-size: 13px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-logo">麦 田</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero" onclick="doNavTo('hero');return false;">首页</a></li>
+    <li><a href="#about" onclick="doNavTo('about');return false;">关于麦田</a></li>
+    <li><a href="#commercial" onclick="doNavTo('commercial');return false;">麦田学习社区</a></li>
+    <li><a href="#rural" onclick="doNavTo('rural');return false;">乡小阅读空间</a></li>
+    <li><a href="#interact" onclick="doNavTo('interact');return false;">互动区</a></li>
+  </ul>
+  <div class="nav-user" id="navUserBtn">
+    <div class="nav-login-btn" id="navLoginBtn" onclick="openAuthModal('login')">登录</div>
+    <div class="nav-user-logged" id="navUserLogged" style="display:none;">
+      <div class="nav-avatar" id="navAvatar"></div>
+      <span class="nav-points" id="navPoints"></span>
+    </div>
+    <div class="user-dropdown" id="userDropdown">
+      <button class="user-dropdown-item" onclick="goProfile()">🌾 我的主页</button>
+      <button class="user-dropdown-item" onclick="goTasks()">📋 任务中心</button>
+      <button class="user-dropdown-item" onclick="goStore()">🎁 兑换商店</button>
+      <button class="user-dropdown-item" onclick="doLogout()">退出登录</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <!-- Flowing photo background - 3 rows -->
+  <div class="hero-photos">
+    <!-- Row 1: fast, scroll right -->
+    <div class="photo-row row-1">
+      <div class="photo-track track-1">
+        <img src="images-web/DSC00558.JPG" alt=""><img src="images-web/DSC00565.JPG" alt=""><img src="images-web/DSC00610.JPG" alt=""><img src="images-web/DSC00628.JPG" alt=""><img src="images-web/DSC03730.JPG" alt=""><img src="images-web/DSC03793.JPG" alt="">
+        <img src="images-web/DSC00558.JPG" alt=""><img src="images-web/DSC00565.JPG" alt=""><img src="images-web/DSC00610.JPG" alt=""><img src="images-web/DSC00628.JPG" alt=""><img src="images-web/DSC03730.JPG" alt=""><img src="images-web/DSC03793.JPG" alt="">
+      </div>
+    </div>
+    <!-- Row 2: medium, scroll left -->
+    <div class="photo-row row-2">
+      <div class="photo-track track-2">
+        <img src="images-web/DSC03887.JPG" alt=""><img src="images-web/DSC04095.JPG" alt=""><img src="images-web/DSC07862.JPG" alt=""><img src="images-web/DSC07952.JPG" alt=""><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt=""><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="">
+        <img src="images-web/DSC03887.JPG" alt=""><img src="images-web/DSC04095.JPG" alt=""><img src="images-web/DSC07862.JPG" alt=""><img src="images-web/DSC07952.JPG" alt=""><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt=""><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="">
+      </div>
+    </div>
+    <!-- Row 3: slow, scroll right -->
+    <div class="photo-row row-3">
+      <div class="photo-track track-3">
+        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt=""><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt=""><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt=""><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt=""><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="">
+        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt=""><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt=""><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt=""><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt=""><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- Dark overlay -->
+  <div class="hero-overlay"></div>
+
+  <!-- Hero content -->
+  <div class="hero-content">
+    <h1>自由，自主，自洽的人</h1>
+    <p class="hero-sub">我们在河南，探索匹配这片土地的教育模式</p>
+    <div class="hero-cta">
+      <a class="btn btn-outline" onclick="doNavTo('interact');return false;">进入互动区 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="fade-up">
+    <div class="section-tag">关于麦田</div>
+    <h2 class="section-title">我们相信，每个孩子<br>都有自己的生长节奏</h2>
+    <p class="section-desc">不是模具，不是流水线。是一片田，有人播种，有人灌溉，有人静静等它长出来。</p>
+  </div>
+  <div class="about-grid fade-up">
+    <div class="about-visual">🌾</div>
+    <div class="about-text">
+      <ul class="star-list">
+        <li>2017年 · 从营地教育出发，带孩子看见更大的世界</li>
+        <li>2023年 · 落地全日制学习社区，做陪伴式的日常教育</li>
+        <li>乡村小学阅读空间 · 让书和教育资源流向更需要的地方</li>
+        <li>在河南，做适配这片土地与家庭的教育探索</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- COMMERCIAL: 麦田学习社区 -->
+<section id="commercial" class="project-section">
+  <div class="fade-up">
+    <div class="section-tag">商业板块</div>
+    <h2 class="section-title">麦田学习社区</h2>
+    <p class="section-desc">面向城市孩子，提供周中、周末及寒暑假的教育陪伴服务。不是补习班，是有人陪的成长空间。</p>
+  </div>
+  <div class="project-card fade-up">
+    <div class="project-card-inner">
+      <div class="project-visual commercial">🏫</div>
+      <div class="project-info">
+        <div class="project-type commercial-type">商业 · 学习社区</div>
+        <h3>陪伴，不是管教</h3>
+        <p>周中的课后时光、周末的探索活动、寒暑假的营地体验——我们用「人在旁边」代替「催促和安排」，让孩子慢慢长出自己的节奏。</p>
+        <div class="project-tags">
+          <span>周中陪伴</span>
+          <span>周末营</span>
+          <span>寒暑假营</span>
+          <span>1对1成长支持</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RURAL: 乡村小学阅读空间 -->
+<section id="rural" class="project-section">
+  <div class="fade-up">
+    <div class="section-tag">公益板块</div>
+    <h2 class="section-title">麦田乡村小学阅读空间</h2>
+    <p class="section-desc">把书送到乡村小学的教室里，让阅读成为日常。一间间阅读空间，是种子，也是光。</p>
+  </div>
+  <div class="project-card fade-up">
+    <div class="project-card-inner">
+      <div class="project-info">
+        <div class="project-type rural-type">公益 · 阅读空间</div>
+        <h3>书，是最好的种子</h3>
+        <p>我们为乡村小学打造阅读空间——不只是捐书，而是创造一个让孩子愿意坐下、翻开、沉浸其中的环境。每一间阅读空间，都由一个乡村小学的真实需求生长出来。</p>
+        <div class="project-tags">
+          <span>乡村小学</span>
+          <span>阅读空间</span>
+          <span>公益捐赠</span>
+          <span>志愿者参与</span>
+        </div>
+      </div>
+      <div class="project-visual rural">📚</div>
+    </div>
+  </div>
+</section>
+
+<!-- STORIES -->
+<section id="stories">
+  <div class="fade-up">
+    <div class="section-tag">麦田故事</div>
+    <h2 class="section-title">一些时刻，一些人</h2>
+    <p class="section-desc">麦田里每天都在发生真实的故事。欢迎投稿，把你的时刻写进来。</p>
+  </div>
+  <div id="homeStoriesGrid" class="stories-grid">
+    <div class="story-card fade-up" style="display:flex;align-items:center;justify-content:center;min-height:180px;background:linear-gradient(135deg,#f5f0e8,#e8f0ea);cursor:pointer;" onclick="scrollToInteractTab('stories')">
+      <div style="text-align:center;">
+        <div style="font-size:36px;margin-bottom:8px;">✍️</div>
+        <div style="font-size:15px;font-weight:600;color:var(--earth);">我要讲故事</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERACT -->
+<section id="interact">
+  <div class="fade-up">
+    <div class="section-tag">互动区</div>
+    <h2 class="section-title">麦田互动空间</h2>
+    <p class="section-desc">留下你的痕迹，也接住别人的故事。</p>
+  </div>
+
+  <!-- Tab 切换 -->
+  <div class="fade-up">
+    <div class="interact-tabs">
+      <button class="interact-tab active" data-tab="feed" onclick="switchTab('feed')">🌱 麦田动态</button>
+      <button class="interact-tab" data-tab="museum" onclick="switchTab('museum')">🏛️ 烦恼博物馆</button>
+      <button class="interact-tab" data-tab="stories" onclick="switchTab('stories')">📖 麦田的故事</button>
+    </div>
+
+    <!-- Panel: 麦田动态 -->
+    <div class="interact-panel active" id="panel-feed" data-tab="feed">
+      <div class="feed-form">
+        <div class="feed-form-header">
+          <div class="feed-avatar">✨</div>
+          <input class="feed-name-input" id="feedName" placeholder="你的名字（可匿名）" />
+        </div>
+        <textarea id="feedInput" placeholder="分享点什么吧……"></textarea>
+        <div class="feed-img-preview" id="feedImgPreview" style="display:none;"></div>
+        <input type="file" id="feedImgInput" accept="image/*" multiple style="display:none;" onchange="previewImage(event)" />
+        <div class="feed-form-actions">
+          <div class="feed-form-left">
+            <button class="feed-img-btn" onclick="document.getElementById('feedImgInput').click()">📷 添加图片</button>
+          </div>
+          <button class="btn btn-primary" onclick="createPost()">发布动态</button>
+        </div>
+      </div>
+      <div class="feed-list" id="feedList">
+        <div class="feed-loading">加载中……</div>
+      </div>
+    </div>
+
+    <!-- Panel: 烦恼博物馆 -->
+    <div class="interact-panel" id="panel-museum" data-tab="museum">
+      <div class="museum-intro">
+        <div class="museum-intro-icon">🏛️</div>
+        <div class="museum-intro-text">
+          <h3>烦恼博物馆</h3>
+          <p>每一个烦恼都值得被认真对待。在这里，你可以把烦恼「捐」进博物馆，让它成为一件展品；其他人可以为它写下应对的策略和方式——不是说教，只是陪伴。</p>
+        </div>
+      </div>
+
+      <!-- 提交表单 -->
+      <div class="museum-submit-form">
+        <h4>🎁 捐出一个烦恼</h4>
+        <div class="museum-form-row">
+          <input class="museum-name-input" id="museumName" placeholder="你的名字（可匿名）" />
+          <label class="museum-anon-label">
+            <input type="checkbox" id="museumAnon" onchange="toggleMuseumAnon()"> 匿名捐出
+          </label>
+        </div>
+        <input class="museum-title-input" id="museumTitle" placeholder="烦恼的名字（一句话概括）" maxlength="40" />
+        <textarea class="museum-desc-input" id="museumDesc" placeholder="可以多说一点，也可以只留一句话……"></textarea>
+        <div class="museum-form-footer">
+          <button class="btn btn-primary" onclick="submitWorry()">放进博物馆</button>
+        </div>
+      </div>
+
+      <!-- 展品列表 -->
+      <div class="museum-grid" id="museumGrid">
+        <div class="museum-empty">
+          <div class="museum-empty-icon">🏛️</div>
+          加载中……
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: 麦田的故事 -->
+    <div class="interact-panel" id="panel-stories" data-tab="stories">
+      <div class="stories-intro">
+        <div class="stories-intro-icon">📖</div>
+        <div class="stories-intro-text">
+          <h3>麦田的故事</h3>
+          <p>真实发生在麦田里的故事——来自孩子、家长、志愿者，也来自我们自己。欢迎讲出你的那个时刻。</p>
+        </div>
+      </div>
+      <div class="stories-submit-form">
+        <h4>✍️ 讲出你的麦田故事</h4>
+        <div class="museum-form-row">
+          <input class="museum-name-input" id="storyName" placeholder="你的名字（可匿名）" />
+          <label class="museum-anon-label">
+            <input type="checkbox" id="storyAnon" onchange="toggleStoryAnon()"> 匿名
+          </label>
+        </div>
+        <input class="museum-title-input" id="storyTitle" placeholder="给故事起个名字（一句话）" maxlength="40" />
+        <textarea class="museum-desc-input" id="storyText" placeholder="讲讲发生了什么……"></textarea>
+        <div class="stories-img-preview" id="storyImgPreview" style="display:none;"></div>
+        <input type="file" id="storyImgInput" accept="image/*" multiple style="display:none;" onchange="previewStoryImage(event)" />
+        <div class="museum-form-footer" style="justify-content:space-between;">
+          <button class="feed-img-btn" onclick="document.getElementById('storyImgInput').click()">📷 添加图片</button>
+          <button class="btn btn-primary" onclick="submitStory()">发出去</button>
+        </div>
+      </div>
+      <div class="stories-list" id="storiesList">
+        <div class="feed-loading">加载中……</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 烦恼详情弹窗 -->
+<div class="museum-modal-overlay" id="museumModal" onclick="closeMuseumModal(event)">
+  <div class="museum-modal" id="museumModalContent">
+    <div class="museum-modal-header" id="museumModalHeader"></div>
+    <div class="museum-modal-body" id="museumModalBody"></div>
+    <button class="museum-modal-close" onclick="closeMuseumModal()">关闭</button>
+  </div>
+</div>
+
+<!-- 故事详情弹窗 -->
+<div class="museum-modal-overlay" id="storyModal" onclick="closeStoryModal(event)">
+  <div class="museum-modal" id="storyModalContent">
+    <div class="museum-modal-header" id="storyModalHeader"></div>
+    <div class="museum-modal-body" id="storyModalBody"></div>
+    <button class="museum-modal-close" onclick="closeStoryModal()">关闭</button>
+  </div>
+</div>
+
+<!-- 动态详情弹窗 -->
+<div class="museum-modal-overlay" id="feedModal" onclick="closeFeedModal(event)">
+  <div class="museum-modal" id="feedModalContent">
+    <div class="museum-modal-header" id="feedModalHeader"></div>
+    <div class="museum-modal-body" id="feedModalBody"></div>
+    <button class="museum-modal-close" onclick="closeFeedModal()">关闭</button>
+  </div>
+</div>
+
+<!-- 登录/注册弹窗 -->
+<div class="auth-modal-overlay" id="authModal">
+  <div class="auth-modal">
+    <button class="auth-modal-close" onclick="closeAuthModal()">×</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="authTabLogin" onclick="switchAuthTab('login')">登录</button>
+      <button class="auth-tab" id="authTabRegister" onclick="switchAuthTab('register')">注册</button>
+    </div>
+    <div class="auth-form" id="authForm">
+      <input class="auth-input" id="authUsername" placeholder="昵称（2-8个字）" maxlength="8">
+      <!-- 注册时才显示：选头像 + 写简介 -->
+      <div id="authRegisterFields" style="display:none;">
+        <div style="text-align:center;margin:8px 0;">
+          <div id="authAvatarPreview" style="width:56px;height:56px;border-radius:50%;background:#f5f0e8;display:inline-flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;"></div>
+          <div style="margin-top:6px;">
+            <label style="background:var(--leaf);color:#fff;padding:5px 14px;border-radius:18px;font-size:12px;cursor:pointer;display:inline-block;">
+              📷 上传照片
+              <input type="file" id="authAvatarUploadInput" accept="image/*" style="display:none;" onchange="handleAuthAvatarUpload(event)">
+            </label>
+          </div>
+        </div>
+        <div style="margin:10px 0 6px;font-size:13px;color:var(--text-light);">或选一个 emoji 头像</div>
+        <div class="avatar-grid" id="avatarGrid"></div>
+        <input class="auth-input" id="authBio" placeholder="一句话介绍自己（选填）" maxlength="30" style="margin:12px 0 4px;">
+      </div>
+      <input class="auth-input" id="authPassword" type="password" placeholder="密码（4位以上）" maxlength="20">
+      <div class="auth-error" id="authError"></div>
+      <button class="auth-submit" id="authSubmit" onclick="submitAuth()">登录</button>
+      <div class="auth-hint">孩子请用昵称+密码登录，不用手机号</div>
+    </div>
+  </div>
+</div>
+
+<!-- 兑换确认弹窗 -->
+<div class="exchange-modal-overlay" id="exchangeModal">
+  <div class="exchange-modal">
+    <div class="exchange-modal-icon" id="exchangeModalIcon">🎁</div>
+    <div class="exchange-modal-title" id="exchangeModalTitle">确认兑换</div>
+    <div class="exchange-modal-desc" id="exchangeModalDesc"></div>
+    <div class="exchange-modal-btns">
+      <button class="exchange-cancel" onclick="closeExchangeModal()">再想想</button>
+      <button class="exchange-confirm" id="exchangeConfirmBtn" onclick="confirmExchange()">确认兑换</button>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑资料弹窗 -->
+<div class="exchange-modal-overlay" id="editProfileModal">
+  <div class="exchange-modal" style="max-width:380px;">
+    <div class="exchange-modal-title">✏️ 编辑资料</div>
+    <!-- 当前头像预览 + 上传 -->
+    <div style="text-align:center;margin:12px 0;">
+      <div id="editAvatarPreview" style="width:72px;height:72px;border-radius:50%;background:#f5f0e8;display:inline-flex;align-items:center;justify-content:center;font-size:36px;overflow:hidden;"></div>
+      <div style="margin-top:8px;">
+        <label class="edit-upload-btn" style="background:var(--leaf);color:#fff;padding:6px 16px;border-radius:20px;font-size:13px;cursor:pointer;display:inline-block;">
+          📷 上传照片
+          <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+        </label>
+        <div style="font-size:11px;color:var(--text-light);margin-top:4px;">或下面选一个 emoji 头像</div>
+      </div>
+    </div>
+    <div style="margin:12px 0 6px;font-size:13px;color:var(--text-light);">选一个 emoji 头像</div>
+    <div class="avatar-grid" id="editAvatarGrid"></div>
+    <input class="auth-input" id="editBio" placeholder="一句话介绍自己（选填）" maxlength="30" style="margin:14px 0 16px;">
+    <div class="exchange-modal-btns">
+      <button class="exchange-cancel" onclick="closeEditProfile()">取消</button>
+      <button class="exchange-confirm" onclick="saveProfile()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 用户主页 -->
+<section id="profile" style="padding:0 0 60px;display:none;">
+  <div class="profile-header" id="profileHeader">
+    <button class="profile-back-btn" onclick="backToSite()" title="返回首页">← 返回</button>
+    <div class="profile-avatar-big" id="profileAvatar">?</div>
+    <div class="profile-name" id="profileName">加载中…</div>
+    <div class="profile-bio" id="profileBio" style="opacity:0.85;font-size:14px;margin:6px 0 12px;"></div>
+    <button class="edit-profile-btn" onclick="openEditProfile()">✏️ 编辑资料</button>
+    <div class="profile-stats">
+      <div class="profile-stat">
+        <div class="profile-stat-num" id="profilePoints">0</div>
+        <div class="profile-stat-label">积分</div>
+      </div>
+      <div class="profile-stat">
+        <div class="profile-stat-num" id="profileBadges">0</div>
+        <div class="profile-stat-label">勋章</div>
+      </div>
+      <div class="profile-stat">
+        <div class="profile-stat-num" id="profilePosts">0</div>
+        <div class="profile-stat-label">发布</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <div class="profile-section-title">🏅 我的勋章</div>
+    <div class="badges-grid" id="badgesGrid">
+      <!-- JS 渲染 -->
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <div class="profile-section-title">📋 我的任务</div>
+    <div class="task-my-list" id="myTasksList">
+      <div style="text-align:center;color:var(--text-light);padding:20px;font-size:13px;">加载中…</div>
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <div class="profile-section-title">📒 积分记录</div>
+    <div class="points-history" id="pointsHistory">
+      <div style="text-align:center;color:var(--text-light);padding:20px;font-size:13px;">暂无记录</div>
+    </div>
+  </div>
+</section>
+
+<!-- 任务中心 -->
+<section id="tasks" style="padding:100px 20px 60px;display:none;">
+  <div class="fade-up" style="text-align:center;margin-bottom:40px;">
+    <div class="section-tag">任务中心</div>
+    <h2 class="section-title">做任务，赚积分</h2>
+    <p class="section-desc">完成任务可以获得积分，用来兑换奖品哦 🌱</p>
+  </div>
+  <div class="task-list" id="taskList">
+    <!-- JS 渲染 -->
+  </div>
+</section>
+
+<!-- 兑换商店 -->
+<section id="store" style="padding:100px 20px 60px;display:none;">
+  <div class="fade-up" style="text-align:center;margin-bottom:40px;">
+    <div class="section-tag">兑换商店</div>
+    <h2 class="section-title">用积分换好礼</h2>
+    <p class="section-desc" id="storeDesc">当前积分：<span id="storePoints" style="color:var(--leaf);font-weight:700;">0</span> 分</p>
+  </div>
+  <div class="store-filter">
+    <button class="store-filter-btn active" onclick="filterStore('all',this)">全部</button>
+    <button class="store-filter-btn" onclick="filterStore('book',this)">📚 书籍</button>
+    <button class="store-filter-btn" onclick="filterStore('stationery',this)">✏️ 文具</button>
+    <button class="store-filter-btn" onclick="filterStore('course',this)">🎓 课程</button>
+  </div>
+  <div class="store-grid" id="storeGrid">
+    <!-- JS 渲染 -->
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">麦 田</div>
+  <p>自由，自主，自洽的人。探索生活和成长的更多可能。</p>
+  <p style="margin-top:12px; opacity:0.5;">© 2026 麦田 · 河南</p>
+</footer>
+
+<script src="maitian-app.js"></script>
+<script>
+  // 确保登录弹窗能工作（内联备份函数）
+  if (typeof window.openAuthModal !== 'function') {
+    window.openAuthModal = function(mode) {
+      var m = document.getElementById('authModal');
+      if (m) m.classList.add('open');
+      var tl = document.getElementById('authTabLogin');
+      var tr = document.getElementById('authTabRegister');
+      var sub = document.getElementById('authSubmit');
+      if (tl) tl.classList.toggle('active', mode==='login');
+      if (tr) tr.classList.toggle('active', mode==='register');
+      if (sub) sub.textContent = mode==='login' ? '登录' : '注册';
+    };
+  }
+  if (typeof window.closeAuthModal !== 'function') {
+    window.closeAuthModal = function() {
+      var m = document.getElementById('authModal');
+      if (m) m.classList.remove('open');
+    };
+  }
+</script>
+<script>
+  // ============ NAV SCROLL ============
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ============ NAV CLICK ============
+  // 使用文档级事件委托，不依赖 inline onclick
+  document.addEventListener('click', function(e) {
+    var a = e.target.closest('a[data-target]');
+    if (!a) return;
+    e.preventDefault();
+    var id = a.getAttribute('data-target');
+    doNavTo(id);
+  });
+
+  function doNavTo(id) {
+    // 1. 隐藏 App 页面
+    ['profile','tasks','store'].forEach(function(sid){
+      var el = document.getElementById(sid); if(el) el.style.display='none';
+    });
+    // 2. 显示主站板块
+    ['hero','about','commercial','rural','interact','stories'].forEach(function(sid){
+      var el = document.getElementById(sid); if(el) el.style.display='';
+    });
+    // 3. 关闭下拉菜单
+    var dd = document.getElementById('userDropdown'); if(dd) dd.classList.remove('show');
+    // 4. 滚动到目标
+    var el = document.getElementById(id);
+    if (!el) return;
+    window.scrollTo(0, 0);
+    setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
+  }
+
+  // 兼容旧调用
+  function scrollToSec(id) { doNavTo(id); }
+  function scrollToInteractTab(tab) {
+    doNavTo('interact');
+    setTimeout(function() { switchTab(tab); }, 250);
+  }
+
+  // 返回主站（内联定义，不依赖 maitian-app.js）
+  function showMainSite() {
+    ['profile','tasks','store'].forEach(function(id){
+      var el = document.getElementById(id); if (el) el.style.display = 'none';
+    });
+    ['hero','about','commercial','rural','interact','stories'].forEach(function(id){
+      var el = document.getElementById(id); if (el) el.style.display = '';
+    });
+    var dd = document.getElementById('userDropdown'); if(dd) dd.classList.remove('show');
+  }
+  function backToSite() {
+    showMainSite();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ============ FADE UP ============
+  const faders = document.querySelectorAll('.fade-up');
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        fadeObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  faders.forEach(el => fadeObserver.observe(el));
+
+  // ============ UTIL ============
+  function escHtml(s) {
+    const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+  }
+
+  function avatarColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    const colors = ['#FFB347','#5B8C5A','#8B7355','#87CEEB','#FF6B6B','#7EC882','#D4A574','#5BA3D9','#E8A87C','#6BC5A0'];
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  // ============ FEED 动态墙 (localStorage) ============
+  const STORAGE_KEY = 'maitian_feed_v2';
+  let currentImages = [];
+  let visitorId = localStorage.getItem('maitian_visitor_id') || '';
+  if (!visitorId) {
+    visitorId = 'v_' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('maitian_visitor_id', visitorId);
+  }
+
+  function feedLoad() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function feedSave(data) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    catch(e) { alert('存储空间不足，建议清理浏览数据'); }
+  }
+
+  function previewImage(e) {
+    Array.from(e.target.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        currentImages.push(ev.target.result);
+        renderImagePreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  }
+
+  function renderImagePreviews() {
+    const c = document.getElementById('feedImgPreview');
+    if (currentImages.length === 0) { c.style.display = 'none'; c.innerHTML = ''; return; }
+    c.style.display = 'flex';
+    c.innerHTML = currentImages.map((img, idx) =>
+      '<div class="feed-img-thumb-wrap">' +
+        '<img src="' + img + '">' +
+        '<button class="feed-img-remove" onclick="removeImage(' + idx + ')">✕</button>' +
+      '</div>'
+    ).join('');
+  }
+
+  function removeImage(idx) {
+    currentImages.splice(idx, 1);
+    renderImagePreviews();
+  }
+
+  function createPost() {
+    const text = document.getElementById('feedInput').value.trim();
+    const name = document.getElementById('feedName').value.trim() || '匿名';
+    if (!text && currentImages.length === 0) { alert('写点什么或加张图片吧～'); return; }
+
+    // 如果用户已登录，使用登录的昵称
+    if (typeof getCurrentUser === 'function') {
+      var u = getCurrentUser();
+      if (u && u.nickname) {
+        // 可选：使用登录昵称覆盖输入框的昵称
+        // name = u.nickname;
+      }
+    }
+
+    var post = {
+      id: Date.now(),
+      author: name,
+      text: text,
+      images: currentImages.slice(),
+      time: (function(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })(new Date()),
+      likes: 0,
+      likedBy: [],
+      comments: []
+    };
+
+    var feed = feedLoad();
+    feed.unshift(post);
+    feedSave(feed);
+
+    document.getElementById('feedInput').value = '';
+    currentImages = [];
+    renderImagePreviews();
+    feedRender(feed);
+
+    // 加积分（如果已登录）
+    if (typeof addPoints === 'function') {
+      var u = getCurrentUser ? getCurrentUser() : null;
+      if (u) {
+        addPoints(2, '发布动态');
+        if (typeof checkBadges === 'function') checkBadges();
+        if (typeof updateNavUI === 'function') updateNavUI();
+      }
+    }
+  }
+
+  function toggleLike(postId) {
+    var feed = feedLoad();
+    var post = feed.find(function(p) { return p.id === postId; });
+    if (!post) return;
+    post.likedBy = post.likedBy || [];
+    if (post.likedBy.indexOf(visitorId) !== -1) {
+      post.likedBy = post.likedBy.filter(function(v) { return v !== visitorId; });
+      post.likes = Math.max(0, (post.likes || 0) - 1);
+    } else {
+      post.likedBy.push(visitorId);
+      post.likes = (post.likes || 0) + 1;
+    }
+    feedSave(feed);
+    feedRender(feed);
+  }
+
+  function addComment(postId, inputEl) {
+    var text = inputEl.value.trim();
+    if (!text) return;
+    var name = document.getElementById('feedName').value.trim() || '匿名';
+
+    var feed = feedLoad();
+    var post = feed.find(function(p) { return p.id === postId; });
+    if (!post) return;
+    post.comments = post.comments || [];
+    post.comments.push({
+      id: Date.now(),
+      author: name,
+      text: text,
+      time: (function(d){ return String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })(new Date())
+    });
+    feedSave(feed);
+    inputEl.value = '';
+    feedRender(feed);
+  }
+
+  function toggleComments(postId) {
+    var el = document.getElementById('comments-' + postId);
+    if (!el) return;
+    el.classList.toggle('show');
+    if (el.classList.contains('show')) {
+      var inp = el.querySelector('.comment-input');
+      if (inp) inp.focus();
+    }
+  }
+
+  function renderPostImagesPreview(post) {
+    var imgs = post.images || [];
+    if (imgs.length === 0 && post.image) {
+      return '<div class="feed-card-image" style="max-height:200px;overflow:hidden;border-radius:8px;transform:rotate(-0.5deg);"><img src="' + escHtml(post.image) + '" style="width:100%;height:100%;object-fit:cover;"></div>';
+    }
+    if (imgs.length === 0) return '';
+    // 只有一张图：直接显示，加一点旋转
+    if (imgs.length === 1) {
+      return '<div class="feed-card-image" style="max-height:200px;overflow:hidden;border-radius:8px;transform:rotate(-0.5deg);"><img src="' + escHtml(imgs[0]) + '" style="width:100%;height:100%;object-fit:cover;"></div>';
+    }
+    // 多张图：堆叠效果
+    var back2 = imgs.length >= 3
+      ? '<div class="stack-photo stack-back2"></div>'
+      : '';
+    var back1 = '<div class="stack-photo stack-back1"></div>';
+    var front = '<div class="stack-photo stack-front"><img src="' + escHtml(imgs[0]) + '"></div>';
+    var count = '<div class="stack-count">+' + (imgs.length - 1) + '张</div>';
+    return '<div class="feed-card-image-stack">' + back2 + back1 + front + count + '</div>';
+  }
+
+  function renderPostImages(post) {
+    var imgs = post.images || [];
+    if (imgs.length === 0 && post.image) {
+      return '<div class="feed-card-image"><img src="' + escHtml(post.image) + '"></div>';
+    }
+    if (imgs.length === 0) return '';
+    var cls = 'feed-card-images' + (imgs.length > 1 ? ' multi' : '');
+    var items = imgs.map(function(s) {
+      return '<div class="feed-card-image"><img src="' + escHtml(s) + '"></div>';
+    }).join('');
+    return '<div class="' + cls + '">' + items + '</div>';
+  }
+
+  function feedRender(feed) {
+    var list = document.getElementById('feedList');
+    if (!feed || feed.length === 0) {
+      list.innerHTML = '<div class="feed-empty"><div class="feed-empty-icon">🌱</div>还没有动态<br>来做第一个分享的人吧！</div>';
+      return;
+    }
+    var vid = visitorId;
+    var html = '';
+    var noteColors = ['note-yellow','note-pink','note-blue','note-green','note-orange','note-purple','note-teal'];
+    for (var i = 0; i < feed.length; i++) {
+      var post = feed[i];
+      var liked = (post.likedBy || []).indexOf(vid) !== -1;
+      var imgHtml = renderPostImagesPreview(post);
+      var cmts = post.comments || [];
+      var authorFirst = post.author && post.author[0] ? post.author[0] : '?';
+
+      var noteColor = noteColors[i % noteColors.length];
+      var rot = (((i * 7.3) % 6) - 3).toFixed(1);
+      html += '<div class="feed-card ' + noteColor + '" style="--r:' + rot + 'deg" onclick="openFeedModal(' + post.id + ');event.stopPropagation();">' +
+        '<div class="feed-card-header">' +
+          '<div class="feed-card-avatar" style="background:' + avatarColor(post.author) + '">' + authorFirst + '</div>' +
+          '<div class="feed-card-info">' +
+            '<div class="feed-card-name">' + escHtml(post.author) + '</div>' +
+            '<div class="feed-card-time">' + post.time + '</div>' +
+          '</div>' +
+        '</div>' +
+        (post.text ? '<div class="feed-card-body">' + escHtml(post.text) + '</div>' : '') +
+        imgHtml +
+        '<div class="feed-card-bar">' +
+          '<button class="feed-like-btn' + (liked ? ' liked' : '') + '" onclick="event.stopPropagation();toggleLike(' + post.id + ')">' +
+            (liked ? '❤️' : '🤍') + ' <span>' + (post.likes || 0) + '</span>' +
+          '</button>' +
+          '<button class="feed-comment-btn" onclick="event.stopPropagation();toggleComments(' + post.id + ')">💬 <span>' + cmts.length + '</span></button>' +
+        '</div>' +
+        '<div class="feed-comments" id="comments-' + post.id + '">';
+
+      for (var j = 0; j < cmts.length; j++) {
+        var c = cmts[j];
+        var cFirst = c.author && c.author[0] ? c.author[0] : '?';
+        html += '<div class="comment-item">' +
+          '<div class="comment-avatar" style="background:' + avatarColor(c.author) + '">' + cFirst + '</div>' +
+          '<div class="comment-body">' +
+            '<div class="comment-name">' + escHtml(c.author) + '</div>' +
+            '<div class="comment-text">' + escHtml(c.text) + '</div>' +
+            '<div class="comment-time">' + c.time + '</div>' +
+          '</div>' +
+        '</div>';
+      }
+
+      html += '<div class="comment-form">' +
+        '<input class="comment-input" placeholder="写评论……" onkeydown="if(event.key===\'Enter\')addComment(' + post.id + ',this)">' +
+        '<button class="comment-send" onclick="addComment(' + post.id + ',this.previousElementSibling)">发送</button>' +
+      '</div></div></div>';
+    }
+    list.innerHTML = html;
+  }
+
+  // ============ 动态详情弹窗 ============
+  var currentFeedId = null;
+
+  function openFeedModal(postId) {
+    currentFeedId = postId;
+    var feed = feedLoad();
+    var post = feed.find(function(p) { return p.id === postId; });
+    if (!post) return;
+
+    var imgs = renderPostImages(post);
+    var cmts = post.comments || [];
+    var liked = ((post.likedBy || []).indexOf(visitorId) !== -1);
+
+    document.getElementById('feedModalHeader').innerHTML =
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
+        '<div class="feed-card-avatar" style="background:' + avatarColor(post.author) + ';width:44px;height:44px;font-size:20px;">' + (post.author[0] || '?') + '</div>' +
+        '<div>' +
+          '<div style="font-size:15px;font-weight:600;color:var(--earth);">' + escHtml(post.author) + '</div>' +
+          '<div style="font-size:12px;color:var(--text-light);">' + post.time + '</div>' +
+        '</div>' +
+      '</div>';
+
+    var cmtsHtml = '';
+    if (cmts.length > 0) {
+      cmtsHtml = '<div class="feed-modal-comments-title">💬 评论 · ' + cmts.length + ' 条</div>' +
+        '<div class="feed-modal-comments-list">' +
+        cmts.map(function(c) {
+          return '<div class="feed-modal-comment-item">' +
+            '<div class="feed-card-avatar" style="background:' + avatarColor(c.author) + ';width:32px;height:32px;font-size:14px;">' + (c.author[0] || '?') + '</div>' +
+            '<div class="feed-modal-comment-body">' +
+              '<div class="feed-modal-comment-name">' + escHtml(c.author) + '</div>' +
+              '<div class="feed-modal-comment-text">' + escHtml(c.text) + '</div>' +
+              '<div class="feed-modal-comment-time">' + c.time + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') +
+        '</div>';
+    } else {
+      cmtsHtml = '<div class="feed-modal-comments-title">💬 评论</div><div style="text-align:center;padding:16px;color:var(--text-light);font-size:13px;">还没有评论，来说两句吧 🌱</div>';
+    }
+
+    document.getElementById('feedModalBody').innerHTML =
+      (post.text ? '<div class="feed-modal-text">' + escHtml(post.text) + '</div>' : '') +
+      imgs +
+      '<div class="feed-modal-actions">' +
+        '<button class="feed-like-btn' + (liked ? ' liked' : '') + '" onclick="event.stopPropagation();toggleLikeModal(' + postId + ')">' +
+          (liked ? '❤️' : '🤍') + ' <span>' + (post.likes || 0) + '</span>' +
+        '</button>' +
+      '</div>' +
+      cmtsHtml +
+      '<div class="feed-modal-comment-form">' +
+        '<input class="feed-modal-comment-input" id="feedModalCommentInput" placeholder="写评论……" onkeydown="if(event.key===\'Enter\')addCommentModal(' + postId + ')">' +
+        '<button class="feed-modal-comment-send" onclick="addCommentModal(' + postId + ')">➤</button>' +
+      '</div>';
+
+    document.getElementById('feedModal').classList.add('open');
+    setTimeout(function() {
+      var inp = document.getElementById('feedModalCommentInput');
+      if (inp) inp.focus();
+    }, 300);
+  }
+
+  function closeFeedModal(e) {
+    if (!e || e.target === document.getElementById('feedModal') || !e.target) {
+      document.getElementById('feedModal').classList.remove('open');
+      currentFeedId = null;
+    }
+  }
+
+  function toggleLikeModal(postId) {
+    toggleLike(postId);
+    openFeedModal(postId);
+  }
+
+  function addCommentModal(postId) {
+    var inp = document.getElementById('feedModalCommentInput');
+    if (!inp) return;
+    var text = inp.value.trim();
+    if (!text) return;
+    var name = document.getElementById('feedName').value.trim() || '匿名';
+    var feed = feedLoad();
+    var post = feed.find(function(p) { return p.id === postId; });
+    if (!post) return;
+    post.comments = post.comments || [];
+    post.comments.push({
+      id: Date.now(),
+      author: name,
+      text: text,
+      time: (function(d){ return String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })(new Date())
+    });
+    feedSave(feed);
+    inp.value = '';
+    openFeedModal(postId);
+    feedRender(feed);
+  }
+
+  // 键盘快捷键
+  document.getElementById('feedInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) createPost();
+  });
+
+  // ============ TAB SWITCH ============
+  function switchTab(tab) {
+    var tabs = document.querySelectorAll('.interact-tab');
+    tabs.forEach(function(t) {
+      t.classList.toggle('active', t.getAttribute('data-tab') === tab);
+    });
+    document.getElementById('panel-feed').classList.toggle('active', tab === 'feed');
+    document.getElementById('panel-museum').classList.toggle('active', tab === 'museum');
+    document.getElementById('panel-stories').classList.toggle('active', tab === 'stories');
+    if (tab === 'museum') museumRender();
+    if (tab === 'stories') storiesRender();
+  }
+
+  // ============ 烦恼博物馆 ============
+  var MUSEUM_KEY = 'maitian_museum_v1';
+  var currentWorryId = null;
+
+  function museumLoad() {
+    try { return JSON.parse(localStorage.getItem(MUSEUM_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function museumSave(data) {
+    try { localStorage.setItem(MUSEUM_KEY, JSON.stringify(data)); }
+    catch(e) { alert('存储空间不足'); }
+  }
+
+  function toggleMuseumAnon() {
+    var anon = document.getElementById('museumAnon').checked;
+    var nameInput = document.getElementById('museumName');
+    nameInput.disabled = anon;
+    nameInput.style.opacity = anon ? '0.4' : '1';
+    if (anon) nameInput.value = '';
+  }
+
+  function submitWorry() {
+    var anon = document.getElementById('museumAnon').checked;
+    var name = anon ? '匿名' : (document.getElementById('museumName').value.trim() || '匿名');
+    var title = document.getElementById('museumTitle').value.trim();
+    var desc = document.getElementById('museumDesc').value.trim();
+    if (!title) { alert('请给你的烦恼起个名字～'); document.getElementById('museumTitle').focus(); return; }
+
+    var worries = museumLoad();
+    var no = String(worries.length + 1).padStart(3, '0');
+    var worry = {
+      id: Date.now(),
+      no: no,
+      author: name,
+      anon: anon,
+      title: title,
+      desc: desc,
+      time: (function(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })(new Date()),
+      strategies: []
+    };
+    worries.unshift(worry);
+    museumSave(worries);
+
+    document.getElementById('museumTitle').value = '';
+    document.getElementById('museumDesc').value = '';
+    document.getElementById('museumName').value = '';
+    document.getElementById('museumAnon').checked = false;
+    toggleMuseumAnon();
+    museumRender();
+  }
+
+  function submitStrategy() {
+    var textarea = document.getElementById('strategyTextarea');
+    var nameInput = document.getElementById('strategyName');
+    var anonCb = document.getElementById('strategyAnon');
+    var text = textarea.value.trim();
+    if (!text) { alert('请写下你的策略～'); textarea.focus(); return; }
+    var anon = anonCb.checked;
+    var name = anon ? '匿名' : (nameInput.value.trim() || '匿名');
+
+    var worries = museumLoad();
+    var worry = worries.find(function(w) { return w.id === currentWorryId; });
+    if (!worry) return;
+    worry.strategies = worry.strategies || [];
+    worry.strategies.push({
+      id: Date.now(),
+      author: name,
+      anon: anon,
+      text: text,
+      time: (function(d){ return String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })(new Date())
+    });
+    museumSave(worries);
+    textarea.value = '';
+    openWorryModal(currentWorryId);
+    museumRender();
+  }
+
+  function openWorryModal(worryId) {
+    currentWorryId = worryId;
+    var worries = museumLoad();
+    var worry = worries.find(function(w) { return w.id === worryId; });
+    if (!worry) return;
+
+    document.getElementById('museumModalHeader').innerHTML =
+      '<div class="museum-modal-no">展品 #' + worry.no + ' &nbsp;·&nbsp; ' + worry.time + '</div>' +
+      '<div class="museum-modal-title">' + escHtml(worry.title) + '</div>' +
+      '<div class="museum-modal-meta">由 ' + escHtml(worry.author) + ' 捐出</div>';
+
+    var strategies = worry.strategies || [];
+    var strategiesHtml = '';
+    if (strategies.length > 0) {
+      strategiesHtml = '<div class="strategy-list">' +
+        strategies.map(function(s) {
+          return '<div class="strategy-item">' +
+            '<div class="strategy-item-header">' +
+              '<div class="strategy-avatar" style="background:' + avatarColor(s.author) + '">' + (s.author[0] || '?') + '</div>' +
+              '<span class="strategy-author">' + escHtml(s.author) + '</span>' +
+              '<span class="strategy-time">' + s.time + '</span>' +
+            '</div>' +
+            '<div class="strategy-text">' + escHtml(s.text) + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+    } else {
+      strategiesHtml = '<div style="text-align:center;padding:24px;color:var(--text-light);font-size:14px;">还没有策略，来第一个回应吧 🌱</div>';
+    }
+
+    document.getElementById('museumModalBody').innerHTML =
+      (worry.desc ? '<div class="museum-modal-desc">' + escHtml(worry.desc) + '</div>' : '') +
+      '<div class="museum-strategies-title">💡 应对策略 · ' + strategies.length + ' 条</div>' +
+      strategiesHtml +
+      '<div class="strategy-form">' +
+        '<h5>写下你的策略或回应</h5>' +
+        '<div class="strategy-form-row">' +
+          '<input class="strategy-name-input" id="strategyName" placeholder="你的名字（可匿名）" />' +
+          '<label class="museum-anon-label"><input type="checkbox" id="strategyAnon"> 匿名</label>' +
+        '</div>' +
+        '<textarea class="strategy-textarea" id="strategyTextarea" placeholder="不需要完美答案，说说你的思路……"></textarea>' +
+        '<button class="strategy-submit-btn" onclick="submitStrategy()">发出去</button>' +
+      '</div>';
+
+    document.getElementById('museumModal').classList.add('open');
+  }
+
+  function closeMuseumModal(e) {
+    if (!e || e.target === document.getElementById('museumModal') || !e.target) {
+      document.getElementById('museumModal').classList.remove('open');
+      currentWorryId = null;
+    }
+  }
+
+  function museumRender() {
+    var grid = document.getElementById('museumGrid');
+    var worries = museumLoad();
+    if (!worries || worries.length === 0) {
+      grid.innerHTML = '<div class="museum-empty"><div class="museum-empty-icon">🏛️</div>博物馆还是空的<br>成为第一个捐出烦恼的人吧</div>';
+      return;
+    }
+    grid.innerHTML = worries.map(function(w) {
+      var stratCount = (w.strategies || []).length;
+      return '<div class="museum-item" onclick="openWorryModal(' + w.id + ')">' +
+        '<div class="museum-item-tag">' +
+          '<span class="item-no"># ' + w.no + '</span>' +
+          '<span class="item-anon">' + (w.anon ? '匿名展品' : escHtml(w.author)) + '</span>' +
+        '</div>' +
+        '<div class="museum-item-body">' +
+          '<div class="museum-item-title">' + escHtml(w.title) + '</div>' +
+          (w.desc ? '<div class="museum-item-desc">' + escHtml(w.desc) + '</div>' : '') +
+        '</div>' +
+        '<div class="museum-item-footer">' +
+          '<span>' + w.time.slice(0, 10) + '</span>' +
+          '<span class="museum-item-strategies">💡 ' + stratCount + ' 条策略</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ============ 麦田的故事 (localStorage) ============
+  const STORIES_KEY = 'maitian_stories_v1';
+  let currentStoryImages = [];
+  let currentStoryId = null;
+  let _adminMode = false;
+  const ADMIN_PWD = 'maitian2026';
+
+  function storiesLoad() {
+    try { return JSON.parse(localStorage.getItem(STORIES_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function storiesSave(data) {
+    try { localStorage.setItem(STORIES_KEY, JSON.stringify(data)); }
+    catch(e) { alert('存储空间不足'); }
+  }
+
+  function toggleStoryAnon() {
+    var anon = document.getElementById('storyAnon').checked;
+    var nameInput = document.getElementById('storyName');
+    nameInput.disabled = anon;
+    nameInput.style.opacity = anon ? '0.4' : '1';
+    if (anon) nameInput.value = '';
+  }
+
+  function previewStoryImage(e) {
+    Array.from(e.target.files).forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        currentStoryImages.push(ev.target.result);
+        renderStoryImgPreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  }
+
+  function renderStoryImgPreviews() {
+    var c = document.getElementById('storyImgPreview');
+    if (currentStoryImages.length === 0) { c.style.display = 'none'; c.innerHTML = ''; return; }
+    c.style.display = 'flex';
+    c.innerHTML = currentStoryImages.map(function(img, idx) {
+      return '<div class="feed-img-thumb-wrap">' +
+        '<img src="' + img + '">' +
+        '<button class="feed-img-remove" onclick="removeStoryImage(' + idx + ')">✕</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function removeStoryImage(idx) {
+    currentStoryImages.splice(idx, 1);
+    renderStoryImgPreviews();
+  }
+
+  function submitStory() {
+    var anon = document.getElementById('storyAnon').checked;
+    var name = anon ? '匿名' : (document.getElementById('storyName').value.trim() || '匿名');
+    var title = document.getElementById('storyTitle').value.trim();
+    var text = document.getElementById('storyText').value.trim();
+    if (!title && !text) { alert('写个标题或讲点什么吧～'); return; }
+
+    var stories = storiesLoad();
+    var story = {
+      id: Date.now(),
+      author: name,
+      anon: anon,
+      title: title,
+      text: text,
+      images: currentStoryImages.slice(),
+      time: (function(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })(new Date()),
+      likes: 0,
+      likedBy: [],
+      comments: [],
+      official: false,
+      featured: false
+    };
+    stories.unshift(story);
+    storiesSave(stories);
+
+    document.getElementById('storyTitle').value = '';
+    document.getElementById('storyText').value = '';
+    document.getElementById('storyName').value = '';
+    document.getElementById('storyAnon').checked = false;
+    toggleStoryAnon();
+    currentStoryImages = [];
+    renderStoryImgPreviews();
+    storiesRender();
+
+    // 加积分（如果已登录）
+    if (typeof addPoints === 'function') {
+      var u = getCurrentUser ? getCurrentUser() : null;
+      if (u) {
+        addPoints(5, '发布故事');
+        if (typeof checkBadges === 'function') checkBadges();
+        if (typeof updateNavUI === 'function') updateNavUI();
+      }
+    }
+  }
+
+  function toggleStoryLike(storyId) {
+    var stories = storiesLoad();
+    var s = stories.find(function(x) { return x.id === storyId; });
+    if (!s) return;
+    s.likedBy = s.likedBy || [];
+    if (s.likedBy.indexOf(visitorId) !== -1) {
+      s.likedBy = s.likedBy.filter(function(v) { return v !== visitorId; });
+      s.likes = Math.max(0, (s.likes || 0) - 1);
+    } else {
+      s.likedBy.push(visitorId);
+      s.likes = (s.likes || 0) + 1;
+    }
+    storiesSave(stories);
+    openStoryModal(storyId);
+  }
+
+  function addStoryComment(storyId, inputEl) {
+    var text = inputEl.value.trim();
+    if (!text) return;
+    var name = document.getElementById('storyName').value.trim() || '匿名';
+    var stories = storiesLoad();
+    var s = stories.find(function(x) { return x.id === storyId; });
+    if (!s) return;
+    s.comments = s.comments || [];
+    s.comments.push({
+      id: Date.now(),
+      author: name,
+      text: text,
+      time: (function(d){ return String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })(new Date())
+    });
+    storiesSave(stories);
+    inputEl.value = '';
+    openStoryModal(storyId);
+  }
+
+  function renderStoryImages(story) {
+    var imgs = story.images || [];
+    if (imgs.length === 0) return '';
+    var cls = 'story-card-images' + (imgs.length > 1 ? ' multi' : '');
+    var items = imgs.map(function(s) {
+      return '<div class="story-card-image"><img src="' + escHtml(s) + '"></div>';
+    }).join('');
+    return '<div class="' + cls + '">' + items + '</div>';
+  }
+
+  function storiesRender() {
+    var list = document.getElementById('storiesList');
+    if (!list) return;
+    var stories = storiesLoad();
+    if (!stories || stories.length === 0) {
+      list.innerHTML = '<div class="story-empty"><div class="story-empty-icon">📖</div>还没有故事<br>来做第一个讲故事的人吧！</div>';
+      return;
+    }
+    // official first
+    stories.sort(function(a, b) {
+      if (a.official !== b.official) return (b.official ? 1 : 0) - (a.official ? 1 : 0);
+      return (b.id || 0) - (a.id || 0);
+    });
+    var vid = visitorId;
+    var html = '';
+    for (var i = 0; i < stories.length; i++) {
+      var s = stories[i];
+      var liked = (s.likedBy || []).indexOf(vid) !== -1;
+      var cmts = s.comments || [];
+      var authorFirst = s.author && s.author[0] ? s.author[0] : '?';
+      var officialBadge = s.official ? '<span class="story-card-badge">官方</span>' : '';
+      html += '<div class="story-card' + (s.official ? ' official' : '') + '" onclick="openStoryModal(' + s.id + ')">' +
+        '<div class="story">' +
+          '<div class="story-avatar" style="background:' + avatarColor(s.author) + '">' + authorFirst + '</div>' +
+          '<div class="story-info">' +
+            '<div class="story-name">' + escHtml(s.author) + '</div>' +
+            '<div class="story-time">' + s.time + '</div>' +
+          '</div>' +
+          officialBadge +
+        '</div>' +
+        (s.title ? '<div class="story-title">' + escHtml(s.title) + '</div>' : '') +
+        (s.text ? '<div class="story-body-text">' + escHtml(s.text.slice(0, 120)) + (s.text.length > 120 ? '…' : '') + '</div>' : '') +
+        renderStoryImages(s) +
+        '<div class="story-bar">' +
+          '<button class="story-like-btn' + (liked ? ' liked' : '') + '" onclick="event.stopPropagation();toggleStoryLike(' + s.id + ')">' +
+            (liked ? '❤️' : '🤍') + ' <span>' + (s.likes || 0) + '</span>' +
+          '</button>' +
+          '<button class="story-comment-btn" onclick="event.stopPropagation();openStoryModal(' + s.id + ')">💬 <span>' + cmts.length + '</span></button>' +
+          (_adminMode ? '<button class="feed-img-btn" style="font-size:12px;padding:4px 10px;" onclick="event.stopPropagation();toggleOfficial(' + s.id + ')">' + (s.official ? '取消官方' : '设官方') + '</button>' : '') +
+          (_adminMode ? '<button class="feed-img-remove" style="font-size:12px;" onclick="event.stopPropagation();deleteStory(' + s.id + ')">删除</button>' : '') +
+        '</div>' +
+      '</div>';
+    }
+    list.innerHTML = html;
+  }
+
+  function openStoryModal(storyId) {
+    currentStoryId = storyId;
+    var stories = storiesLoad();
+    var s = stories.find(function(x) { return x.id === storyId; });
+    if (!s) return;
+
+    document.getElementById('storyModalHeader').innerHTML =
+      '<div style="font-size:12px;letter-spacing:3px;opacity:0.7;margin-bottom:6px;">' + s.time + '</div>' +
+      (s.title ? '<div style="font-size:22px;font-weight:700;line-height:1.4;">' + escHtml(s.title) + '</div>' : '') +
+      '<div style="font-size:12px;opacity:0.65;margin-top:6px;">由 ' + escHtml(s.author) + ' 讲述</div>';
+
+    var cmts = s.comments || [];
+    var cmtsHtml = '';
+    if (cmts.length > 0) {
+      cmtsHtml = '<div class="strategy-list">' + cmts.map(function(c) {
+        return '<div class="strategy-item">' +
+          '<div class="strategy-item-header">' +
+            '<div class="strategy-avatar" style="background:' + avatarColor(c.author) + '">' + (c.author[0] || '?') + '</div>' +
+            '<span class="strategy-author">' + escHtml(c.author) + '</span>' +
+            '<span class="strategy-time">' + c.time + '</span>' +
+          '</div>' +
+          '<div class="strategy-text">' + escHtml(c.text) + '</div>' +
+        '</div>';
+      }).join('') + '</div>';
+    } else {
+      cmtsHtml = '<div style="text-align:center;padding:24px;color:var(--text-light);font-size:14px;">还没有评论，来说两句吧 🌱</div>';
+    }
+
+    document.getElementById('storyModalBody').innerHTML =
+      (s.text ? '<div class="museum-modal-desc">' + escHtml(s.text) + '</div>' : '') +
+      renderStoryImages(s) +
+      '<div class="museum-strategies-title">💬 评论 · ' + cmts.length + ' 条</div>' +
+      cmtsHtml +
+      '<div class="strategy-form">' +
+        '<h5>写一条评论</h5>' +
+        '<div class="strategy-form-row">' +
+          '<input class="strategy-name-input" id="storyCommentName" placeholder="你的名字（可匿名）" />' +
+          '<label class="museum-anon-label"><input type="checkbox" id="storyCommentAnon"> 匿名</label>' +
+        '</div>' +
+        '<textarea class="strategy-textarea" id="storyCommentText" placeholder="说点什么……"></textarea>' +
+        '<button class="strategy-submit-btn" onclick="submitStoryComment()">发出去</button>' +
+      '</div>';
+
+    document.getElementById('storyModal').classList.add('open');
+  }
+
+  function closeStoryModal(e) {
+    if (!e || e.target === document.getElementById('storyModal') || !e.target) {
+      document.getElementById('storyModal').classList.remove('open');
+      currentStoryId = null;
+    }
+  }
+
+  function submitStoryComment() {
+    var textarea = document.getElementById('storyCommentText');
+    var nameInput = document.getElementById('storyCommentName');
+    var anonCb = document.getElementById('storyCommentAnon');
+    var text = textarea.value.trim();
+    if (!text) { alert('写点什么吧～'); textarea.focus(); return; }
+    var anon = anonCb.checked;
+    var name = anon ? '匿名' : (nameInput.value.trim() || '匿名');
+
+    var stories = storiesLoad();
+    var s = stories.find(function(x) { return x.id === currentStoryId; });
+    if (!s) return;
+    s.comments = s.comments || [];
+    s.comments.push({
+      id: Date.now(),
+      author: name,
+      text: text,
+      time: (function(d){ return String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })(new Date())
+    });
+    storiesSave(stories);
+    textarea.value = '';
+    openStoryModal(currentStoryId);
+    storiesRender();
+  }
+
+  function toggleOfficial(storyId) {
+    var stories = storiesLoad();
+    var s = stories.find(function(x) { return x.id === storyId; });
+    if (!s) return;
+    s.official = !s.official;
+    storiesSave(stories);
+    storiesRender();
+  }
+
+  function deleteStory(storyId) {
+    if (!confirm('确定删除这个故事？')) return;
+    var stories = storiesLoad();
+    stories = stories.filter(function(x) { return x.id !== storyId; });
+    storiesSave(stories);
+    if (currentStoryId === storyId) closeStoryModal();
+    storiesRender();
+  }
+
+  function enterAdminMode() {
+    var pwd = prompt('请输入管理密码：');
+    if (pwd === ADMIN_PWD) {
+      _adminMode = true;
+      alert('已进入管理模式');
+      storiesRender();
+    } else if (pwd !== null) {
+      alert('密码错误');
+    }
+  }
+
+  // ============ 首页故事网格 ============
+  function renderHomeStories() {
+    var grid = document.getElementById('homeStoriesGrid');
+    if (!grid) return;
+    var stories = storiesLoad();
+    // 优先显示官方故事，其次是最新的3篇（不含「我要讲故事」按钮）
+    var candidates = stories.filter(function(s) { return s.official; });
+    if (candidates.length < 3) {
+      stories.forEach(function(s) {
+        if (candidates.indexOf(s) === -1) candidates.push(s);
+      });
+    }
+    candidates = candidates.slice(0, 3);
+    // 保留第一个子元素（「我要讲故事」按钮）
+    var addCard = grid.children[0];
+    grid.innerHTML = '';
+    grid.appendChild(addCard);
+
+    var coverEmojis = ['☀️','🌧️','🌱','📖','🎈','🏫','🌾','💡'];
+    candidates.forEach(function(s, idx) {
+      var card = document.createElement('div');
+      card.className = 'story-card fade-up';
+      card.onclick = function() { scrollToInteractTab('stories'); setTimeout(function(){ openStoryModal(s.id); }, 600); };
+      card.innerHTML =
+        '<div class="story-cover c' + ((idx % 3) + 1) + '">' + (coverEmojis[idx % coverEmojis.length]) + '</div>' +
+        '<div class="story-body">' +
+          '<div class="story-meta">' + (s.official ? '官方故事 · ' : '故事 · ') + s.time + '</div>' +
+          '<h4>' + escHtml(s.title || s.text.slice(0, 30)) + '</h4>' +
+          '<p>' + escHtml(s.text.slice(0, 60)) + (s.text.length > 60 ? '……' : '') + '</p>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  // ============ INIT ============
+  feedRender(feedLoad());
+  museumRender();
+  storiesRender();
+  renderHomeStories();
+</script>
+<script src="maitian-feed-api.js"></script>
+
+</body>
+</html>
