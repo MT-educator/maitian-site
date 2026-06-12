@@ -228,6 +228,54 @@ class H(BaseHTTPRequestHandler):
             db("UPDATE feed SET comments=? WHERE id=?", (jdump(cmts), pid), commit=True)
             self._j({"ok":True,"comment":cmt}); return
 
+        # 博物馆点赞
+        if "/api/museum/" in p and p.endswith("/like"):
+            pid = int(p.split("/")[3])
+            rows = db("SELECT likedBy FROM museum WHERE id=?", (pid,))
+            if not rows: self._j({"ok":False,"msg":"不存在"},404); return
+            lb = jload(rows[0][0], [])
+            vis = d.get("visitor","anon")
+            if vis in lb: lb.remove(vis)
+            else: lb.append(vis)
+            db("UPDATE museum SET likes=?, likedBy=? WHERE id=?", (len(lb), jdump(lb), pid), commit=True)
+            self._j({"ok":True,"likes":len(lb),"liked":vis in lb}); return
+
+        # 博物馆评论
+        if "/api/museum/" in p and p.endswith("/comment"):
+            pid = int(p.split("/")[3])
+            rows = db("SELECT comments FROM museum WHERE id=?", (pid,))
+            if not rows: self._j({"ok":False,"msg":"不存在"},404); return
+            cmts = jload(rows[0][0], [])
+            cmt = {"id":gen_id(),"author":d.get("author","匿名"),"text":d.get("text",""),"time":time.strftime("%m-%d %H:%M")}
+            if not cmt["text"]: self._j({"ok":False,"msg":"评论不能为空"},400); return
+            cmts.append(cmt)
+            db("UPDATE museum SET comments=? WHERE id=?", (jdump(cmts), pid), commit=True)
+            self._j({"ok":True,"comment":cmt}); return
+
+        # 故事点赞
+        if "/api/stories/" in p and p.endswith("/like"):
+            pid = int(p.split("/")[3])
+            rows = db("SELECT likedBy FROM stories WHERE id=?", (pid,))
+            if not rows: self._j({"ok":False,"msg":"不存在"},404); return
+            lb = jload(rows[0][0], [])
+            vis = d.get("visitor","anon")
+            if vis in lb: lb.remove(vis)
+            else: lb.append(vis)
+            db("UPDATE stories SET likes=?, likedBy=? WHERE id=?", (len(lb), jdump(lb), pid), commit=True)
+            self._j({"ok":True,"likes":len(lb),"liked":vis in lb}); return
+
+        # 故事评论
+        if "/api/stories/" in p and p.endswith("/comment"):
+            pid = int(p.split("/")[3])
+            rows = db("SELECT comments FROM stories WHERE id=?", (pid,))
+            if not rows: self._j({"ok":False,"msg":"不存在"},404); return
+            cmts = jload(rows[0][0], [])
+            cmt = {"id":gen_id(),"author":d.get("author","匿名"),"text":d.get("text",""),"time":time.strftime("%m-%d %H:%M")}
+            if not cmt["text"]: self._j({"ok":False,"msg":"评论不能为空"},400); return
+            cmts.append(cmt)
+            db("UPDATE stories SET comments=? WHERE id=?", (jdump(cmts), pid), commit=True)
+            self._j({"ok":True,"comment":cmt}); return
+
         # 烦恼博物馆发帖
         if p == "/api/museum":
             pid = gen_id()
