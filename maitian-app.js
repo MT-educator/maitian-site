@@ -1,6 +1,6 @@
 // ============ 麦田成长体系 (服务器版) ============
 console.log('maitian-app.js loaded — server mode');
-const API = 'http://localhost:8768';
+const API = '';  // 部署后自动使用当前域名
 
 // ============ 会话管理（只存昵称，数据从服务器拉）============
 const MT_SESSION_KEY = 'mt_session_v1';
