@@ -4,7 +4,7 @@
  * 替换 index.html 里的内联 localStorage 脚本
  * 用法：在 index.html 的 <head> 末尾加载此文件
  */
-const _API = 'http://localhost:8768';
+const _API = '';  // 部署后自动使用当前域名
 
 // ========== 工具 ==========
 function escHtml(s) {
