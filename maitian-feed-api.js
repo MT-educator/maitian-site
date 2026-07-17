@@ -33,6 +33,16 @@ function _lsLoad(key) {
 }
 function _lsSave(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
+  // 异步推送到 Supabase
+  if (typeof mtPushFeed === 'function' && key === 'mt_feed_v2') {
+    mtPushFeed(data).catch(function(){});
+  }
+  if (typeof mtPushMuseum === 'function' && key === 'mt_museum_v2') {
+    mtPushMuseum(data).catch(function(){});
+  }
+  if (typeof mtPushStories === 'function' && key === 'mt_stories_v2') {
+    mtPushStories(data).catch(function(){});
+  }
 }
 
 // ========== 数据加载/保存 ==========
@@ -451,11 +461,22 @@ window.addEventListener('DOMContentLoaded', function() {
     }, {threshold:0.15});
     obs.observe(el);
   });
-  // 加载初始数据
-  var params = new URLSearchParams(location.search);
-  var tab = params.get('tab') || 'feed';
-  switchTab(tab);
-  console.log('[麦田] localStorage 模式已启动，访客ID：'+visitorId);
+
+  // 等待 Supabase 同步完成后加载初始数据
+  function loadTab() {
+    var params = new URLSearchParams(location.search);
+    var tab = params.get('tab') || 'feed';
+    switchTab(tab);
+  }
+
+  if (typeof mtInitSupabase === 'function') {
+    // 确保 Supabase 先同步
+    mtInitSupabase().then(loadTab).catch(loadTab);
+  } else {
+    loadTab();
+  }
+
+  console.log('[麦田] localStorage + Supabase 模式已启动，访客ID：'+visitorId);
 });
 
 // ========== 全局函数暴露 ==========
