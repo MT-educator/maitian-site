@@ -330,6 +330,58 @@
       line-height: 1.7;
     }
 
+    /* Section banner image */
+    .section-banner {
+      width: 100%; max-height: 320px; object-fit: cover;
+      border-radius: 16px; margin: 24px 0;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+
+    /* Belief card image */
+    .belief-card-img {
+      width: 100%; height: 160px; object-fit: cover;
+      border-radius: 12px; margin-bottom: 16px;
+    }
+
+    /* Photo gallery (3 images) */
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin: 24px 0;
+    }
+    .photo-gallery img {
+      width: 100%; height: 200px; object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: transform 0.3s;
+    }
+    .photo-gallery img:hover { transform: scale(1.03); }
+    @media (max-width: 768px) {
+      .photo-gallery { grid-template-columns: 1fr; }
+      .photo-gallery img { height: 220px; }
+    }
+
+    /* Series card image */
+    .series-card-img {
+      width: 100%; height: 140px; object-fit: cover;
+      border-radius: 10px; margin-bottom: 12px;
+    }
+
+    /* Rural value card image */
+    .rural-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin: 24px 0;
+    }
+    .rural-gallery img {
+      width: 100%; height: 200px; object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    @media (max-width: 768px) {
+      .rural-gallery { grid-template-columns: 1fr; }
+    }
+
     /* ========== PROJECT CARD ========== */
     .project-section { margin-bottom: 80px; }
     .project-card {
@@ -1477,24 +1529,29 @@
   <div class="fade-up">
     <div class="section-tag">关于麦田</div>
     <h2 class="section-title">关于麦田</h2>
+    <img class="section-banner" src="images-web/feishu/about_header.jpg" alt="麦田教育">
   </div>
 
   <div class="fade-up">
     <h3 class="about-sub-title">我们对人的信念</h3>
     <div class="belief-grid">
       <div class="belief-card">
+        <img class="belief-card-img" src="images-web/feishu/belief_kids.jpg" alt="对于孩子">
         <h4>对于孩子</h4>
         <p>我们相信孩子带着自己的感受/思考来到这个世界，ta们需要在真实的参与中，建构自己的认知/心智/情感系统。</p>
       </div>
       <div class="belief-card">
+        <img class="belief-card-img" src="images-web/feishu/belief_parents.jpg" alt="对于养育者">
         <h4>对于养育者</h4>
         <p>我们相信每个养育者都有为孩子好的意图，也有过往的经历和学习，而且在自己的价值系统下，选择最佳的行动路径。</p>
       </div>
       <div class="belief-card">
+        <img class="belief-card-img" src="images-web/feishu/belief_partners.jpg" alt="对于工作伙伴">
         <h4>对于工作伙伴</h4>
         <p>我们希望麦田作为一份工作，不只是一份收入，还有潜力成为伙伴的创造价值和探索可能性的地方。</p>
       </div>
       <div class="belief-card">
+        <img class="belief-card-img" src="images-web/feishu/belief_society.jpg" alt="对于社会">
         <h4>对于社会</h4>
         <p>我们认为，社会属于每一个生活在其中的人，我们希望生活在一个什么样的社会，就应该与孩子们一起去把它创造出来。</p>
       </div>
@@ -1531,6 +1588,11 @@
   <div class="fade-up">
     <div class="section-tag">麦田学习社区</div>
     <h2 class="section-title">与孩子们一起学习，一起生活</h2>
+    <div class="photo-gallery">
+      <img src="images-web/feishu/community_1.jpg" alt="麦田学习社区">
+      <img src="images-web/feishu/community_2.jpg" alt="麦田学习社区">
+      <img src="images-web/feishu/community_3.jpg" alt="麦田学习社区">
+    </div>
   </div>
 
   <div class="fade-up">
@@ -1550,6 +1612,7 @@
     <h3 class="about-sub-title" style="margin-top:48px;">我们提供的内容</h3>
     <div class="series-grid">
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_weekend.jpg" alt="周末系列">
         <h4>周末系列</h4>
         <ul>
           <li>山野徒步系列</li>
@@ -1559,12 +1622,14 @@
         </ul>
       </div>
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_weekday.jpg" alt="周中系列">
         <h4>周中系列</h4>
         <ul>
           <li>Gap Days</li>
         </ul>
       </div>
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_summer.jpg" alt="寒暑假系列">
         <h4>寒暑假系列</h4>
         <ul>
           <li>托管日间营</li>
@@ -1572,6 +1637,7 @@
         </ul>
       </div>
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_holiday.jpg" alt="小假期系列">
         <h4>小假期系列</h4>
         <ul>
           <li>五一儿童节</li>
@@ -1579,6 +1645,7 @@
         </ul>
       </div>
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_family.jpg" alt="家庭系列">
         <h4>家庭系列</h4>
         <ul>
           <li>四季家庭游</li>
@@ -1595,6 +1662,11 @@
     <div class="section-tag">乡小阅读空间</div>
     <h2 class="section-title">与孩子们共同打造一个小地方</h2>
     <p class="section-desc">我们与乡村小学一起，改造和运营学校的阅读馆，招募驻校志愿者以学期为单位，参与支持空间的日常运营。</p>
+    <div class="rural-gallery">
+      <img src="images-web/feishu/rural_1.jpg" alt="乡小阅读空间">
+      <img src="images-web/feishu/rural_2.jpg" alt="乡小阅读空间">
+      <img src="images-web/feishu/rural_3.jpg" alt="乡小阅读空间">
+    </div>
   </div>
 
   <div class="fade-up">
