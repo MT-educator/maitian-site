@@ -12,6 +12,11 @@ function mtLoadUsers() {
 }
 function mtSaveUsers(users) {
   localStorage.setItem(MT_USERS_KEY, JSON.stringify(users));
+  // 异步推送到 Supabase
+  if (typeof mtPushProfile === 'function') {
+    var u = _curUser;
+    if (u) mtPushProfile(u).catch(function(){});
+  }
 }
 
 // ============ 会话管理 ============
@@ -550,8 +555,21 @@ function initMaitianApp() {
   if (u) { renderProfile(); renderTaskList(); renderStoreGrid(); }
 }
 
-if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', initMaitianApp);
-else initMaitianApp();
+if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', function() {
+  // 先从 Supabase 拉取，再初始化
+  if (typeof mtInitSupabase === 'function') {
+    mtInitSupabase().then(initMaitianApp).catch(function() { initMaitianApp(); });
+  } else {
+    initMaitianApp();
+  }
+});
+else {
+  if (typeof mtInitSupabase === 'function') {
+    mtInitSupabase().then(initMaitianApp).catch(function() { initMaitianApp(); });
+  } else {
+    initMaitianApp();
+  }
+}
 
 // ============ 发布积分监听 ============
 document.addEventListener('DOMContentLoaded', function(){
