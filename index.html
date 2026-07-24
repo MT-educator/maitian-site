@@ -897,11 +897,11 @@
       }
 
       /* 发布表单 */
-      .feed-form { padding: 16px 14px; border-radius: 12px; }
+      .feed-form { padding: 14px 12px; border-radius: 12px; margin-bottom: 24px; }
       .feed-form-header { gap: 8px; flex-direction: column; align-items: stretch; }
-      .feed-avatar { width: 36px; height: 36px; font-size: 18px; }
-      .feed-name-input { width: 100%; font-size: 13px; }
-      .feed-form textarea { font-size: 14px; min-height: 80px; }
+      .feed-avatar { width: 36px; height: 36px; font-size: 18px; align-self: flex-start; }
+      .feed-name-input { width: 100%; font-size: 13px; padding: 8px 12px; }
+      .feed-form textarea { font-size: 14px; min-height: 72px; padding: 12px; }
       .feed-form-actions { flex-wrap: wrap; gap: 8px; flex-direction: column; }
       .feed-form-left { width: 100%; }
       .feed-img-btn { font-size: 13px; padding: 8px 14px; }
@@ -909,11 +909,20 @@
 
       /* 动态卡片列表 */
       .feed-list { grid-template-columns: 1fr; gap: 20px; padding: 16px 0 32px; }
+      .feed-list::before {
+        content: '—— 社区动态 ——';
+        display: block; text-align: center;
+        font-size: 12px; color: var(--text-light);
+        margin-bottom: 12px; letter-spacing: 2px;
+      }
+      .feed-list:empty::before { content: none; }
       .feed-card { padding: 14px 12px 22px; }
       .feed-card-body { font-size: 14px; }
       .feed-card-bar { gap: 16px; padding-top: 12px; margin-top: 16px; }
       .feed-card-images.multi { grid-template-columns: 1fr; }
       .feed-card-image-stack { height: 150px; }
+      .feed-empty { padding: 40px 20px; font-size: 14px; }
+      .feed-empty-icon { font-size: 40px; }
 
       /* 烦恼博物馆 */
       .museum-intro { flex-direction: column; padding: 20px 16px; }
