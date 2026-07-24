@@ -1974,9 +1974,9 @@
   <p style="margin-top:12px; opacity:0.5;">© 2026 麦田 · 河南</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="maitian-supabase.js"></script>
-<script src="maitian-app.js"></script>
+<!-- v3: 不再需要 Supabase JS 库，改用原生 fetch -->
+<script src="maitian-supabase.js?v=20260724v3"></script>
+<script src="maitian-app.js?v=20260724v3"></script>
 <script>
   // 确保登录弹窗能工作（内联备份函数）
   if (typeof window.openAuthModal !== 'function') {
