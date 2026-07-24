@@ -260,6 +260,22 @@ async function mtPushProfile(user) {
   }
 }
 
+// ============ 合并后把本地独有数据推回云端（修复历史数据不一致）============
+async function mtPushAllLocal() {
+  var sb = mtSupabase(); if (!sb) return;
+  try {
+    var feed = JSON.parse(localStorage.getItem(MT_INLINE_KEYS.feed) || '[]');
+    if (feed.length > 0) await mtPushFeed(feed);
+    var museum = JSON.parse(localStorage.getItem(MT_INLINE_KEYS.museum) || '[]');
+    if (museum.length > 0) await mtPushMuseum(museum);
+    var stories = JSON.parse(localStorage.getItem(MT_INLINE_KEYS.stories) || '[]');
+    if (stories.length > 0) await mtPushStories(stories);
+    console.log('[麦田] 本地独有数据已推回云端');
+  } catch(e) {
+    console.warn('[麦田] 推回本地数据失败:', e.message);
+  }
+}
+
 // ============ 初始化（防重入）============
 var _mtInitPromise = null;
 
@@ -268,6 +284,8 @@ async function mtInitSupabase() {
   _mtInitPromise = (async function() {
     await mtMigrateToSupabase();
     await mtPullFromSupabase();
+    // 合并后把本地独有的数据推回云端，保证各设备最终一致
+    await mtPushAllLocal();
     console.log('[麦田] Supabase 同步层就绪');
   })();
   return _mtInitPromise;
