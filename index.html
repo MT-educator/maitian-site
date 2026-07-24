@@ -330,6 +330,58 @@
       line-height: 1.7;
     }
 
+    /* Section banner image */
+    .section-banner {
+      width: 100%; max-height: 320px; object-fit: cover;
+      border-radius: 16px; margin: 24px 0;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+
+    /* Belief card image */
+    .belief-card-img {
+      width: 100%; height: 160px; object-fit: cover;
+      border-radius: 12px; margin-bottom: 16px;
+    }
+
+    /* Photo gallery (3 images) */
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin: 24px 0;
+    }
+    .photo-gallery img {
+      width: 100%; height: 200px; object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: transform 0.3s;
+    }
+    .photo-gallery img:hover { transform: scale(1.03); }
+    @media (max-width: 768px) {
+      .photo-gallery { grid-template-columns: 1fr; }
+      .photo-gallery img { height: 220px; }
+    }
+
+    /* Series card image */
+    .series-card-img {
+      width: 100%; height: 140px; object-fit: cover;
+      border-radius: 10px; margin-bottom: 12px;
+    }
+
+    /* Rural value card image */
+    .rural-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin: 24px 0;
+    }
+    .rural-gallery img {
+      width: 100%; height: 200px; object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    @media (max-width: 768px) {
+      .rural-gallery { grid-template-columns: 1fr; }
+    }
+
     /* ========== PROJECT CARD ========== */
     .project-section { margin-bottom: 80px; }
     .project-card {
@@ -805,15 +857,102 @@
 
     /* ========== RESPONSIVE ========== */
     @media (max-width: 768px) {
-      nav { padding: 12px 20px; }
-      .nav-links { gap: 16px; }
-      .nav-links a { font-size: 12px; }
-      section { padding: 60px 20px; }
+      nav { padding: 12px 16px; }
+      .nav-links { gap: 10px; }
+      .nav-links a { font-size: 11px; letter-spacing: 0; }
+      .nav-logo { font-size: 17px; }
+      section { padding: 50px 16px; }
       .about-grid { grid-template-columns: 1fr; }
       .about-visual { height: 220px; }
       .project-card-inner { grid-template-columns: 1fr; }
       .project-visual { height: 160px; }
       .hero h1 { font-size: 32px; }
+      .hero-content { padding: 100px 20px 60px; }
+      .hero-sub { font-size: 15px; padding: 0 12px; }
+
+      /* 防止横向溢出 */
+      #interact, #about, #commercial, #rural { overflow-x: hidden; }
+      .doc-text-block { padding: 20px 16px; font-size: 14px; }
+
+      /* ===== 互动区移动端 ===== */
+      .interact-tabs {
+        gap: 4px; margin-bottom: 24px;
+        flex-wrap: nowrap; overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        position: relative;
+      }
+      .interact-tabs::-webkit-scrollbar { display: none; }
+      .interact-tab {
+        padding: 10px 14px; font-size: 12px;
+        white-space: nowrap; flex-shrink: 0;
+        border-bottom-width: 2px; letter-spacing: 0;
+      }
+      /* 右侧渐变提示可滑动 */
+      .interact-tabs::after {
+        content: ''; display: block;
+        width: 28px; flex-shrink: 0;
+        background: linear-gradient(to right, transparent, var(--warm));
+        pointer-events: none; position: sticky; right: 0;
+      }
+
+      /* 发布表单 */
+      .feed-form { padding: 16px 14px; border-radius: 12px; }
+      .feed-form-header { gap: 8px; flex-direction: column; align-items: stretch; }
+      .feed-avatar { width: 36px; height: 36px; font-size: 18px; }
+      .feed-name-input { width: 100%; font-size: 13px; }
+      .feed-form textarea { font-size: 14px; min-height: 80px; }
+      .feed-form-actions { flex-wrap: wrap; gap: 8px; flex-direction: column; }
+      .feed-form-left { width: 100%; }
+      .feed-img-btn { font-size: 13px; padding: 8px 14px; }
+      .feed-form-actions .btn { width: 100%; font-size: 14px; padding: 10px; }
+
+      /* 动态卡片列表 */
+      .feed-list { grid-template-columns: 1fr; gap: 20px; padding: 16px 0 32px; }
+      .feed-card { padding: 14px 12px 22px; }
+      .feed-card-body { font-size: 14px; }
+      .feed-card-bar { gap: 16px; padding-top: 12px; margin-top: 16px; }
+      .feed-card-images.multi { grid-template-columns: 1fr; }
+      .feed-card-image-stack { height: 150px; }
+
+      /* 烦恼博物馆 */
+      .museum-intro { flex-direction: column; padding: 20px 16px; }
+      .museum-intro-icon { font-size: 36px; }
+      .museum-intro-text h3 { font-size: 18px; }
+      .museum-submit-form { padding: 16px 14px; }
+      .museum-form-row { flex-direction: column; gap: 8px; }
+      .museum-name-input { width: 100%; }
+      .museum-grid { grid-template-columns: 1fr; gap: 16px; }
+      .museum-item-body { padding: 16px 14px 12px; }
+
+      /* 故事 */
+      .stories-intro { flex-direction: column; padding: 20px 16px; }
+      .stories-intro-icon { font-size: 36px; }
+      .stories-intro-text h3 { font-size: 18px; }
+      .stories-submit-form { padding: 16px 14px; }
+      .story-card { padding: 16px 14px; }
+      .story-card-images.multi { grid-template-columns: 1fr; }
+      .story-card-body-text { font-size: 14px; }
+
+      /* 弹窗移动端适配 */
+      .museum-modal { max-width: 96vw; max-height: 85vh; border-radius: 12px; }
+      .museum-modal-header { padding: 20px 16px 16px; }
+      .museum-modal-body { padding: 20px 16px; }
+      .museum-modal-title { font-size: 18px; }
+      .strategy-item { padding: 14px; }
+
+      /* 信念卡片 */
+      .belief-grid { grid-template-columns: 1fr; }
+      .belief-card { padding: 20px 16px; }
+    }
+
+    /* 超小屏（iPhone SE 等 320px 宽） */
+    @media (max-width: 374px) {
+      nav { padding: 10px 10px; }
+      .nav-links { gap: 6px; }
+      .nav-links a { font-size: 10px; }
+      .interact-tab { padding: 8px 10px; font-size: 11px; }
+      .interact-tabs::after { width: 20px; }
     }
 
     /* ========== SCROLL ANIMATION ========== */
@@ -1304,8 +1443,8 @@
 <nav id="mainNav">
   <div class="nav-logo">麦 田</div>
   <ul class="nav-links" id="navLinks">
-    <li><a href="#interact" onclick="doNavTo('interact');return false;">互动区</a></li>
     <li><a href="#hero" onclick="doNavTo('hero');return false;">首页</a></li>
+    <li><a href="#interact" onclick="doNavTo('interact');return false;">互动区</a></li>
     <li><a href="#about" onclick="doNavTo('about');return false;">关于麦田</a></li>
     <li><a href="#commercial" onclick="doNavTo('commercial');return false;">麦田学习社区</a></li>
     <li><a href="#rural" onclick="doNavTo('rural');return false;">乡小阅读空间</a></li>
@@ -1324,6 +1463,46 @@
     </div>
   </div>
 </nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <!-- Flowing photo background - 3 rows -->
+  <div class="hero-photos">
+    <!-- Row 1: fast, scroll right -->
+    <div class="photo-row row-1">
+      <div class="photo-track track-1">
+        <img src="images-web/DSC00558.JPG" alt=""><img src="images-web/DSC00565.JPG" alt=""><img src="images-web/DSC00610.JPG" alt=""><img src="images-web/DSC00628.JPG" alt=""><img src="images-web/DSC03730.JPG" alt=""><img src="images-web/DSC03793.JPG" alt="">
+        <img src="images-web/DSC00558.JPG" alt=""><img src="images-web/DSC00565.JPG" alt=""><img src="images-web/DSC00610.JPG" alt=""><img src="images-web/DSC00628.JPG" alt=""><img src="images-web/DSC03730.JPG" alt=""><img src="images-web/DSC03793.JPG" alt="">
+      </div>
+    </div>
+    <!-- Row 2: medium, scroll left -->
+    <div class="photo-row row-2">
+      <div class="photo-track track-2">
+        <img src="images-web/DSC03887.JPG" alt=""><img src="images-web/DSC04095.JPG" alt=""><img src="images-web/DSC07862.JPG" alt=""><img src="images-web/DSC07952.JPG" alt=""><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt=""><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="">
+        <img src="images-web/DSC03887.JPG" alt=""><img src="images-web/DSC04095.JPG" alt=""><img src="images-web/DSC07862.JPG" alt=""><img src="images-web/DSC07952.JPG" alt=""><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt=""><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="">
+      </div>
+    </div>
+    <!-- Row 3: slow, scroll right -->
+    <div class="photo-row row-3">
+      <div class="photo-track track-3">
+        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt=""><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt=""><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt=""><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt=""><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="">
+        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt=""><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt=""><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt=""><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt=""><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- Dark overlay -->
+  <div class="hero-overlay"></div>
+
+  <!-- Hero content -->
+  <div class="hero-content">
+    <h1>麦田教育</h1>
+    <p class="hero-sub">我们在河南，与孩子们一起探询学习和生活的更多可能性</p>
+    <div class="hero-cta">
+      <a class="btn btn-outline" onclick="doNavTo('interact');return false;">进入互动区 →</a>
+    </div>
+  </div>
+</section>
 
 <!-- INTERACT -->
 <section id="interact">
@@ -1432,69 +1611,35 @@
 </section>
 
 
-<!-- HERO -->
-<section class="hero" id="hero">
-  <!-- Flowing photo background - 3 rows -->
-  <div class="hero-photos">
-    <!-- Row 1: fast, scroll right -->
-    <div class="photo-row row-1">
-      <div class="photo-track track-1">
-        <img src="images-web/DSC00558.JPG" alt=""><img src="images-web/DSC00565.JPG" alt=""><img src="images-web/DSC00610.JPG" alt=""><img src="images-web/DSC00628.JPG" alt=""><img src="images-web/DSC03730.JPG" alt=""><img src="images-web/DSC03793.JPG" alt="">
-        <img src="images-web/DSC00558.JPG" alt=""><img src="images-web/DSC00565.JPG" alt=""><img src="images-web/DSC00610.JPG" alt=""><img src="images-web/DSC00628.JPG" alt=""><img src="images-web/DSC03730.JPG" alt=""><img src="images-web/DSC03793.JPG" alt="">
-      </div>
-    </div>
-    <!-- Row 2: medium, scroll left -->
-    <div class="photo-row row-2">
-      <div class="photo-track track-2">
-        <img src="images-web/DSC03887.JPG" alt=""><img src="images-web/DSC04095.JPG" alt=""><img src="images-web/DSC07862.JPG" alt=""><img src="images-web/DSC07952.JPG" alt=""><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt=""><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="">
-        <img src="images-web/DSC03887.JPG" alt=""><img src="images-web/DSC04095.JPG" alt=""><img src="images-web/DSC07862.JPG" alt=""><img src="images-web/DSC07952.JPG" alt=""><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt=""><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="">
-      </div>
-    </div>
-    <!-- Row 3: slow, scroll right -->
-    <div class="photo-row row-3">
-      <div class="photo-track track-3">
-        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt=""><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt=""><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt=""><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt=""><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="">
-        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt=""><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt=""><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt=""><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt=""><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="">
-      </div>
-    </div>
-  </div>
-
-  <!-- Dark overlay -->
-  <div class="hero-overlay"></div>
-
-  <!-- Hero content -->
-  <div class="hero-content">
-    <h1>麦田教育</h1>
-    <p class="hero-sub">我们在河南，与孩子们一起探询学习和生活的更多可能性</p>
-    <div class="hero-cta">
-      <a class="btn btn-outline" onclick="doNavTo('interact');return false;">进入互动区 →</a>
-    </div>
-  </div>
-</section>
 
 <!-- ABOUT -->
 <section id="about">
   <div class="fade-up">
     <div class="section-tag">关于麦田</div>
     <h2 class="section-title">关于麦田</h2>
+    <img class="section-banner" src="images-web/feishu/about_header.jpg" alt="麦田教育">
   </div>
 
   <div class="fade-up">
     <h3 class="about-sub-title">我们对人的信念</h3>
     <div class="belief-grid">
       <div class="belief-card">
+        <img class="belief-card-img" src="images-web/feishu/belief_kids.jpg" alt="对于孩子">
         <h4>对于孩子</h4>
         <p>我们相信孩子带着自己的感受/思考来到这个世界，ta们需要在真实的参与中，建构自己的认知/心智/情感系统。</p>
       </div>
       <div class="belief-card">
+        <img class="belief-card-img" src="images-web/feishu/belief_parents.jpg" alt="对于养育者">
         <h4>对于养育者</h4>
         <p>我们相信每个养育者都有为孩子好的意图，也有过往的经历和学习，而且在自己的价值系统下，选择最佳的行动路径。</p>
       </div>
       <div class="belief-card">
+        <img class="belief-card-img" src="images-web/feishu/belief_partners.jpg" alt="对于工作伙伴">
         <h4>对于工作伙伴</h4>
         <p>我们希望麦田作为一份工作，不只是一份收入，还有潜力成为伙伴的创造价值和探索可能性的地方。</p>
       </div>
       <div class="belief-card">
+        <img class="belief-card-img" src="images-web/feishu/belief_society.jpg" alt="对于社会">
         <h4>对于社会</h4>
         <p>我们认为，社会属于每一个生活在其中的人，我们希望生活在一个什么样的社会，就应该与孩子们一起去把它创造出来。</p>
       </div>
@@ -1531,6 +1676,11 @@
   <div class="fade-up">
     <div class="section-tag">麦田学习社区</div>
     <h2 class="section-title">与孩子们一起学习，一起生活</h2>
+    <div class="photo-gallery">
+      <img src="images-web/feishu/community_1.jpg" alt="麦田学习社区">
+      <img src="images-web/feishu/community_2.jpg" alt="麦田学习社区">
+      <img src="images-web/feishu/community_3.jpg" alt="麦田学习社区">
+    </div>
   </div>
 
   <div class="fade-up">
@@ -1550,6 +1700,7 @@
     <h3 class="about-sub-title" style="margin-top:48px;">我们提供的内容</h3>
     <div class="series-grid">
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_weekend.jpg" alt="周末系列">
         <h4>周末系列</h4>
         <ul>
           <li>山野徒步系列</li>
@@ -1559,12 +1710,14 @@
         </ul>
       </div>
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_weekday.jpg" alt="周中系列">
         <h4>周中系列</h4>
         <ul>
           <li>Gap Days</li>
         </ul>
       </div>
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_summer.jpg" alt="寒暑假系列">
         <h4>寒暑假系列</h4>
         <ul>
           <li>托管日间营</li>
@@ -1572,6 +1725,7 @@
         </ul>
       </div>
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_holiday.jpg" alt="小假期系列">
         <h4>小假期系列</h4>
         <ul>
           <li>五一儿童节</li>
@@ -1579,6 +1733,7 @@
         </ul>
       </div>
       <div class="series-card">
+        <img class="series-card-img" src="images-web/feishu/series_family.jpg" alt="家庭系列">
         <h4>家庭系列</h4>
         <ul>
           <li>四季家庭游</li>
@@ -1595,6 +1750,11 @@
     <div class="section-tag">乡小阅读空间</div>
     <h2 class="section-title">与孩子们共同打造一个小地方</h2>
     <p class="section-desc">我们与乡村小学一起，改造和运营学校的阅读馆，招募驻校志愿者以学期为单位，参与支持空间的日常运营。</p>
+    <div class="rural-gallery">
+      <img src="images-web/feishu/rural_1.jpg" alt="乡小阅读空间">
+      <img src="images-web/feishu/rural_2.jpg" alt="乡小阅读空间">
+      <img src="images-web/feishu/rural_3.jpg" alt="乡小阅读空间">
+    </div>
   </div>
 
   <div class="fade-up">
