@@ -1516,9 +1516,9 @@
 <!-- INTERACT -->
 <section id="interact">
   <div class="fade-up">
-    <div class="section-tag">互动区</div>
+    <div class="section-tag">互动区 <span id="syncBadge" style="display:none;cursor:pointer;font-size:11px;margin-left:6px;color:#4a90d9;" onclick="manualSync()" title="同步数据">🔄 同步</span></div>
     <h2 class="section-title">麦田互动空间</h2>
-    <p class="section-desc">留下你的痕迹，也接住别人的故事。</p>
+    <p class="section-desc">留下你的痕迹，也接住别人的故事。<br><span id="syncStatus" style="font-size:13px;color:#888;"></span></p>
   </div>
 
   <!-- Tab 切换 -->
@@ -2932,6 +2932,31 @@
     });
   }
 
+  // ============ SYNC ============
+  function showSyncStatus(msg, color) {
+    var el = document.getElementById('syncStatus');
+    if (el) { el.textContent = msg; el.style.color = color || '#888'; }
+  }
+  function showSyncBadge(show) {
+    var el = document.getElementById('syncBadge');
+    if (el) el.style.display = show ? 'inline' : 'none';
+  }
+  window.manualSync = function() {
+    if (typeof mtPushAllLocal !== 'function') { showSyncStatus('同步未就绪，请刷新页面', 'red'); return; }
+    showSyncStatus('正在同步...', '#4a90d9');
+    mtPushAllLocal().then(function() {
+      return mtPullFromSupabase();
+    }).then(function() {
+      feedRender(feedLoad());
+      museumRender();
+      storiesRender();
+      showSyncStatus('✅ 同步完成！', '#27ae60');
+      setTimeout(function() { showSyncStatus(''); }, 3000);
+    }).catch(function(e) {
+      showSyncStatus('❌ 同步失败: ' + (e.message || '网络错误'), 'red');
+    });
+  };
+
   // ============ INIT ============
   // 1. 立即渲染（不等待 Supabase）
   feedRender(feedLoad());
@@ -2940,14 +2965,21 @@
 
   // 2. 后台同步 Supabase，完成后重新渲染
   if (typeof mtInitSupabase === 'function') {
+    showSyncBadge(true);
+    showSyncStatus('正在同步云端数据...', '#4a90d9');
     mtInitSupabase().then(function() {
       feedRender(feedLoad());
       museumRender();
       storiesRender();
+      showSyncStatus('');
       console.log('[麦田] Supabase 同步完成，已刷新页面');
     }).catch(function(e) {
+      showSyncStatus('自动同步失败，可点击🔄手动同步', '#e67e22');
       console.warn('[麦田] Supabase 同步失败:', e);
     });
+  } else {
+    showSyncBadge(true);
+    showSyncStatus('已加载 ' + (feedLoad().length||0) + ' 条动态', '#888');
   }
 </script>
 <!-- maitian-feed-api.js 已移除，Supabase 同步由 maitian-supabase.js + 内联代码处理 -->
