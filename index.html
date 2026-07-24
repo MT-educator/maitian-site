@@ -857,58 +857,102 @@
 
     /* ========== RESPONSIVE ========== */
     @media (max-width: 768px) {
-      nav { padding: 12px 20px; }
-      .nav-links { gap: 16px; }
-      .nav-links a { font-size: 12px; }
-      section { padding: 60px 20px; }
+      nav { padding: 12px 16px; }
+      .nav-links { gap: 10px; }
+      .nav-links a { font-size: 11px; letter-spacing: 0; }
+      .nav-logo { font-size: 17px; }
+      section { padding: 50px 16px; }
       .about-grid { grid-template-columns: 1fr; }
       .about-visual { height: 220px; }
       .project-card-inner { grid-template-columns: 1fr; }
       .project-visual { height: 160px; }
       .hero h1 { font-size: 32px; }
+      .hero-content { padding: 100px 20px 60px; }
+      .hero-sub { font-size: 15px; padding: 0 12px; }
+
+      /* 防止横向溢出 */
+      #interact, #about, #commercial, #rural { overflow-x: hidden; }
+      .doc-text-block { padding: 20px 16px; font-size: 14px; }
 
       /* ===== 互动区移动端 ===== */
       .interact-tabs {
-        gap: 4px; margin-bottom: 28px;
+        gap: 4px; margin-bottom: 24px;
         flex-wrap: nowrap; overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        padding-bottom: 4px;
+        padding-bottom: 8px;
+        position: relative;
       }
       .interact-tabs::-webkit-scrollbar { display: none; }
       .interact-tab {
-        padding: 10px 16px; font-size: 13px;
+        padding: 10px 14px; font-size: 12px;
         white-space: nowrap; flex-shrink: 0;
-        border-bottom-width: 2px;
+        border-bottom-width: 2px; letter-spacing: 0;
+      }
+      /* 右侧渐变提示可滑动 */
+      .interact-tabs::after {
+        content: ''; display: block;
+        width: 28px; flex-shrink: 0;
+        background: linear-gradient(to right, transparent, var(--warm));
+        pointer-events: none; position: sticky; right: 0;
       }
 
       /* 发布表单 */
-      .feed-form { padding: 16px; }
-      .feed-form-header { gap: 8px; }
-      .feed-name-input { width: 120px; font-size: 13px; }
-      .feed-form-actions { flex-wrap: wrap; gap: 8px; }
+      .feed-form { padding: 16px 14px; border-radius: 12px; }
+      .feed-form-header { gap: 8px; flex-direction: column; align-items: stretch; }
+      .feed-avatar { width: 36px; height: 36px; font-size: 18px; }
+      .feed-name-input { width: 100%; font-size: 13px; }
+      .feed-form textarea { font-size: 14px; min-height: 80px; }
+      .feed-form-actions { flex-wrap: wrap; gap: 8px; flex-direction: column; }
       .feed-form-left { width: 100%; }
       .feed-img-btn { font-size: 13px; padding: 8px 14px; }
       .feed-form-actions .btn { width: 100%; font-size: 14px; padding: 10px; }
 
-      /* 动态卡片 */
-      .feed-card { padding: 16px; }
-      .feed-content { font-size: 14px; }
+      /* 动态卡片列表 */
+      .feed-list { grid-template-columns: 1fr; gap: 20px; padding: 16px 0 32px; }
+      .feed-card { padding: 14px 12px 22px; }
+      .feed-card-body { font-size: 14px; }
+      .feed-card-bar { gap: 16px; padding-top: 12px; margin-top: 16px; }
+      .feed-card-images.multi { grid-template-columns: 1fr; }
+      .feed-card-image-stack { height: 150px; }
 
       /* 烦恼博物馆 */
-      .museum-intro { flex-direction: column; padding: 24px 20px; }
+      .museum-intro { flex-direction: column; padding: 20px 16px; }
       .museum-intro-icon { font-size: 36px; }
-      .museum-submit-form { padding: 20px; }
+      .museum-intro-text h3 { font-size: 18px; }
+      .museum-submit-form { padding: 16px 14px; }
       .museum-form-row { flex-direction: column; gap: 8px; }
       .museum-name-input { width: 100%; }
-      .museum-grid { grid-template-columns: 1fr; }
-      .museum-card { padding: 20px; }
+      .museum-grid { grid-template-columns: 1fr; gap: 16px; }
+      .museum-item-body { padding: 16px 14px 12px; }
 
       /* 故事 */
-      .stories-intro { flex-direction: column; padding: 24px 20px; }
+      .stories-intro { flex-direction: column; padding: 20px 16px; }
       .stories-intro-icon { font-size: 36px; }
-      .stories-submit-form { padding: 20px; }
-      .story-card { padding: 20px; }
+      .stories-intro-text h3 { font-size: 18px; }
+      .stories-submit-form { padding: 16px 14px; }
+      .story-card { padding: 16px 14px; }
       .story-card-images.multi { grid-template-columns: 1fr; }
+      .story-card-body-text { font-size: 14px; }
+
+      /* 弹窗移动端适配 */
+      .museum-modal { max-width: 96vw; max-height: 85vh; border-radius: 12px; }
+      .museum-modal-header { padding: 20px 16px 16px; }
+      .museum-modal-body { padding: 20px 16px; }
+      .museum-modal-title { font-size: 18px; }
+      .strategy-item { padding: 14px; }
+
+      /* 信念卡片 */
+      .belief-grid { grid-template-columns: 1fr; }
+      .belief-card { padding: 20px 16px; }
+    }
+
+    /* 超小屏（iPhone SE 等 320px 宽） */
+    @media (max-width: 374px) {
+      nav { padding: 10px 10px; }
+      .nav-links { gap: 6px; }
+      .nav-links a { font-size: 10px; }
+      .interact-tab { padding: 8px 10px; font-size: 11px; }
+      .interact-tabs::after { width: 20px; }
     }
 
     /* ========== SCROLL ANIMATION ========== */
