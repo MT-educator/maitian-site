@@ -25,6 +25,48 @@ var MT_INLINE_KEYS = {
   users:  'mt_users_v2'
 };
 
+// ============ 安全 localStorage 工具 ============
+function mtSafeSetItem(key, value, silent) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch(e) {
+    if (e.name === 'QuotaExceededError' || (e.message && e.message.toLowerCase().indexOf('quota') !== -1)) {
+      mtClearOldCache();
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch(e2) {
+        if (!silent) console.warn('[麦田] 存储空间已满，无法保存:', key);
+        return false;
+      }
+    }
+    if (!silent) console.warn('[麦田] localStorage 写入失败:', e.message);
+    return false;
+  }
+}
+
+function mtClearOldCache() {
+  // 清理已知旧键和冗余键，保留核心数据
+  var keysToRemove = ['mt_supabase_migrated', 'mt_supabase_migrated_v2', 'mt_supabase_migrated_v3'];
+  keysToRemove.forEach(function(k) {
+    try { localStorage.removeItem(k); } catch(e){}
+  });
+  // 如果 feed 数据过大，只保留最近 30 条
+  try {
+    var feed = JSON.parse(localStorage.getItem(MT_INLINE_KEYS.feed) || '[]');
+    if (feed.length > 30) {
+      localStorage.setItem(MT_INLINE_KEYS.feed, JSON.stringify(feed.slice(0, 30)));
+    }
+  } catch(e){}
+  try {
+    var stories = JSON.parse(localStorage.getItem(MT_INLINE_KEYS.stories) || '[]');
+    if (stories.length > 20) {
+      localStorage.setItem(MT_INLINE_KEYS.stories, JSON.stringify(stories.slice(0, 20)));
+    }
+  } catch(e){}
+}
+
 // ============ 原生 fetch 封装 ============
 function mtFetch(path, options) {
   options = options || {};
@@ -126,7 +168,7 @@ async function mtMigrateToSupabase() {
   } catch(e) {
     console.warn('[麦田] 迁移失败:', e.message);
   }
-  localStorage.setItem('mt_supabase_migrated_v3', '1');
+  mtSafeSetItem('mt_supabase_migrated_v3', '1');
   console.log('[麦田] 首次迁移完成');
 }
 
@@ -139,7 +181,7 @@ async function mtPullFromSupabase() {
       var mergedFeed = mtMergeLocalWithRemote(MT_INLINE_KEYS.feed, feedData, function(p) {
         return { id:p.id, author:p.author, text:p.text, images:p.images, time:p.created_at, likes:p.likes, likedBy:p.liked_by, comments:p.comments };
       });
-      localStorage.setItem(MT_INLINE_KEYS.feed, JSON.stringify(mergedFeed));
+      mtSafeSetItem(MT_INLINE_KEYS.feed, JSON.stringify(mergedFeed));
     }
 
     // 拉取博物馆
@@ -154,7 +196,7 @@ async function mtPullFromSupabase() {
           return { id:p.id, no:'000', author:p.author, anon:false, title:p.text||'', desc:'', time:p.created_at, strategies:[] };
         }
       });
-      localStorage.setItem(MT_INLINE_KEYS.museum, JSON.stringify(mergedMuseum));
+      mtSafeSetItem(MT_INLINE_KEYS.museum, JSON.stringify(mergedMuseum));
     }
 
     // 拉取故事
@@ -175,7 +217,7 @@ async function mtPullFromSupabase() {
           return { id:p.id, author:p.author, anon:false, title:'', text:p.text||'', images:p.images||[], time:p.created_at, likes:p.likes||0, likedBy:p.liked_by||[], comments:p.comments||[], official:p.official||false, featured:false };
         }
       });
-      localStorage.setItem(MT_INLINE_KEYS.stories, JSON.stringify(mergedStories));
+      mtSafeSetItem(MT_INLINE_KEYS.stories, JSON.stringify(mergedStories));
     }
 
     // 拉取用户
@@ -189,7 +231,7 @@ async function mtPullFromSupabase() {
           exchanges:u.exchanges||[], history:u.history||[]
         };
       });
-      localStorage.setItem(MT_INLINE_KEYS.users, JSON.stringify(users));
+      mtSafeSetItem(MT_INLINE_KEYS.users, JSON.stringify(users));
     }
 
     console.log('[麦田] 从云端同步完成 (fetch)');
