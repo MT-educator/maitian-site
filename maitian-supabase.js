@@ -93,19 +93,19 @@ async function mtPullFromSupabase() {
   if (!sb) return;
 
   try {
-    // 拉取动态
+    // 拉取动态 — 合并云端和本地数据（云端有、本地也有 → 合并互动字段）
     var r1 = await sb.from('feed_posts').select('*').order('id', { ascending: false });
     if (r1.data && r1.data.length > 0) {
-      var feed = r1.data.map(function(p) {
+      var mergedFeed = mtMergeLocalWithRemote(MT_INLINE_KEYS.feed, r1.data, function(p) {
         return { id:p.id, author:p.author, text:p.text, images:p.images, time:p.created_at, likes:p.likes, likedBy:p.liked_by, comments:p.comments };
-      });
-      localStorage.setItem(MT_INLINE_KEYS.feed, JSON.stringify(feed));
+      }, 'id');
+      localStorage.setItem(MT_INLINE_KEYS.feed, JSON.stringify(mergedFeed));
     }
 
-    // 拉取博物馆（从 JSON 反序列化）
+    // 拉取博物馆 — 合并云端和本地数据
     var r2 = await sb.from('museum_posts').select('*').order('id', { ascending: false });
     if (r2.data && r2.data.length > 0) {
-      var museum = r2.data.map(function(p) {
+      var mergedMuseum = mtMergeLocalWithRemote(MT_INLINE_KEYS.museum, r2.data, function(p) {
         try {
           var obj = JSON.parse(p.text);
           obj.id = obj.id || p.id;
@@ -113,14 +113,14 @@ async function mtPullFromSupabase() {
         } catch(e) {
           return { id:p.id, no:'000', author:p.author, anon:false, title:p.text||'', desc:'', time:p.created_at, strategies:[] };
         }
-      });
-      localStorage.setItem(MT_INLINE_KEYS.museum, JSON.stringify(museum));
+      }, 'id');
+      localStorage.setItem(MT_INLINE_KEYS.museum, JSON.stringify(mergedMuseum));
     }
 
-    // 拉取故事（从 JSON 反序列化）
+    // 拉取故事 — 合并云端和本地数据
     var r3 = await sb.from('stories').select('*').order('id', { ascending: false });
     if (r3.data && r3.data.length > 0) {
-      var stories = r3.data.map(function(p) {
+      var mergedStories = mtMergeLocalWithRemote(MT_INLINE_KEYS.stories, r3.data, function(p) {
         try {
           var obj = JSON.parse(p.text);
           obj.id = obj.id || p.id;
@@ -134,8 +134,8 @@ async function mtPullFromSupabase() {
         } catch(e) {
           return { id:p.id, author:p.author, anon:false, title:'', text:p.text||'', images:p.images||[], time:p.created_at, likes:p.likes||0, likedBy:p.liked_by||[], comments:p.comments||[], official:p.official||false, featured:false };
         }
-      });
-      localStorage.setItem(MT_INLINE_KEYS.stories, JSON.stringify(stories));
+      }, 'id');
+      localStorage.setItem(MT_INLINE_KEYS.stories, JSON.stringify(mergedStories));
     }
 
     // 拉取用户
@@ -158,16 +158,54 @@ async function mtPullFromSupabase() {
   }
 }
 
-// ============ 推送 ============
+// ============ 合并工具 ============
+function mtMergeArrayBy(remoteArr, key, mapFn) {
+  var result = {};
+  remoteArr.forEach(function(item) {
+    result[key(item)] = mapFn(item);
+  });
+  return result;
+}
+
+function mtMergeLocalWithRemote(localKey, remoteArr, mapFn, sortKey) {
+  var local = [];
+  try { local = JSON.parse(localStorage.getItem(localKey) || '[]'); } catch(e) {}
+  var remoteMap = mtMergeArrayBy(remoteArr, function(r) { return mapFn(r).id; }, mapFn);
+  // 本地数据优先（可能有未推送的），但云端已有的按 id 合并
+  local.forEach(function(p) {
+    if (remoteMap[p.id]) {
+      // 云端已有 → 合并互动数据（保留更大的 likes，合并 likedBy 和 comments）
+      var r = remoteMap[p.id];
+      p.likes = Math.max(p.likes || 0, r.likes || 0);
+      p.likedBy = Array.from(new Set((p.likedBy || []).concat(r.likedBy || [])));
+      var commentMap = {};
+      (r.comments || []).forEach(function(c) { commentMap[c.id] = c; });
+      (p.comments || []).forEach(function(c) { if (!commentMap[c.id]) commentMap[c.id] = c; else commentMap[c.id] = c; });
+      p.comments = Object.values(commentMap).sort(function(a,b) { return a.id - b.id; });
+    }
+  });
+  // 云端有但本地没有的 → 加入
+  Object.keys(remoteMap).forEach(function(id) {
+    if (!local.some(function(p) { return p.id == id; })) {
+      local.push(remoteMap[id]);
+    }
+  });
+  // 排序
+  if (sortKey) {
+    local.sort(function(a, b) { return (b[sortKey] || 0) - (a[sortKey] || 0); });
+  }
+  return local;
+}
+
+// ============ 推送（全部改 upsert，不再删光再插）============
 async function mtPushFeed(feed) {
   var sb = mtSupabase(); if (!sb) return;
   try {
-    await sb.from('feed_posts').delete().neq('id', 0);
     if (feed.length > 0) {
       var rows = feed.map(function(p) {
         return { id:p.id, author:p.author, text:p.text, images:p.images, created_at:p.time, likes:p.likes, liked_by:p.likedBy, comments:p.comments };
       });
-      await sb.from('feed_posts').insert(rows);
+      await sb.from('feed_posts').upsert(rows, { onConflict: 'id' });
     }
   } catch(e) {
     console.warn('[麦田] 推送动态失败:', e.message);
@@ -177,13 +215,11 @@ async function mtPushFeed(feed) {
 async function mtPushMuseum(museum) {
   var sb = mtSupabase(); if (!sb) return;
   try {
-    await sb.from('museum_posts').delete().neq('id', 0);
     if (museum.length > 0) {
       var rows = museum.map(function(p) {
-        // 完整对象存为 JSON
         return { id:p.id, author:p.author, text:JSON.stringify(p), created_at:p.time, likes:0, liked_by:[], comments:[], replies:[] };
       });
-      await sb.from('museum_posts').insert(rows);
+      await sb.from('museum_posts').upsert(rows, { onConflict: 'id' });
     }
   } catch(e) {
     console.warn('[麦田] 推送博物馆失败:', e.message);
@@ -193,13 +229,11 @@ async function mtPushMuseum(museum) {
 async function mtPushStories(stories) {
   var sb = mtSupabase(); if (!sb) return;
   try {
-    await sb.from('stories').delete().neq('id', 0);
     if (stories.length > 0) {
       var rows = stories.map(function(p) {
-        // 完整对象存为 JSON
         return { id:p.id, author:p.author, text:JSON.stringify(p), images:p.images, created_at:p.time, likes:p.likes, liked_by:p.likedBy, comments:p.comments, official:p.official||false };
       });
-      await sb.from('stories').insert(rows);
+      await sb.from('stories').upsert(rows, { onConflict: 'id' });
     }
   } catch(e) {
     console.warn('[麦田] 推送故事失败:', e.message);
