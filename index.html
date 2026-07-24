@@ -1519,6 +1519,7 @@
     <div class="section-tag">互动区 <span id="syncBadge" style="display:none;cursor:pointer;font-size:11px;margin-left:6px;color:#4a90d9;" onclick="manualSync()" title="同步数据">🔄 同步</span></div>
     <h2 class="section-title">麦田互动空间</h2>
     <p class="section-desc">留下你的痕迹，也接住别人的故事。<br><span id="syncStatus" style="font-size:13px;color:#888;"></span></p>
+    <p style="font-size:12px;color:#999;margin-top:6px;"><span id="storageStatus" style="cursor:pointer;text-decoration:underline;" onclick="if(confirm('清除本地缓存不会删除云端数据，确定清除？')){localStorage.clear();location.reload();}">清除本地缓存</span> · 云端数据不受影响</p>
   </div>
 
   <!-- Tab 切换 -->
@@ -2085,32 +2086,61 @@
   let visitorId = localStorage.getItem('maitian_visitor_id') || '';
   if (!visitorId) {
     visitorId = 'v_' + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem('maitian_visitor_id', visitorId);
+    try { localStorage.setItem('maitian_visitor_id', visitorId); } catch(e){}
   }
 
   function feedLoad() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
     catch(e) { return []; }
   }
-  function feedSave(data) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-    catch(e) { alert('存储空间不足，建议清理浏览数据'); }
+  function feedSave(data, silent) {
+    // 限制本地只保留最近 50 条，避免存储膨胀
+    var toStore = data.slice(0, 50);
+    var ok = mtSafeSetItem(STORAGE_KEY, JSON.stringify(toStore), true);
+    if (!ok && !silent) showSyncStatus('❌ 本地存储已满，建议清除缓存', 'red');
     // Supabase 跨设备同步：先推后拉，合并多设备数据
     if (typeof mtPushFeed === 'function') {
-      mtPushFeed(data).then(function() {
+      mtPushFeed(toStore).then(function() {
         return typeof mtPullFromSupabase === 'function' ? mtPullFromSupabase() : Promise.resolve();
       }).then(function() {
         feedRender(feedLoad());
-      }).catch(function(err){ console.warn('[麦田] 推送动态失败:', err); });
+        if (!silent) showSyncStatus('');
+      }).catch(function(err){
+        console.warn('[麦田] 推送动态失败:', err);
+        if (!silent) showSyncStatus('❌ 同步失败: ' + (err.message||'网络错误'), 'red');
+      });
     }
+    return ok;
+  }
+
+  // 压缩图片：最大 800px 宽，JPEG 0.75 质量，目标 < 200KB
+  function compressImage(dataUrl, maxWidth, quality, callback) {
+    maxWidth = maxWidth || 800;
+    quality = quality || 0.75;
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var w = img.width, h = img.height;
+      if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
+      ctx.drawImage(img, 0, 0, w, h);
+      var out = canvas.toDataURL('image/jpeg', quality);
+      callback(out);
+    };
+    img.onerror = function() { callback(dataUrl); };
+    img.src = dataUrl;
   }
 
   function previewImage(e) {
     Array.from(e.target.files).forEach(file => {
       const reader = new FileReader();
       reader.onload = function(ev) {
-        currentImages.push(ev.target.result);
-        renderImagePreviews();
+        compressImage(ev.target.result, 800, 0.75, function(compressed) {
+          currentImages.push(compressed);
+          renderImagePreviews();
+        });
       };
       reader.readAsDataURL(file);
     });
@@ -2437,16 +2467,19 @@
     try { return JSON.parse(localStorage.getItem(MUSEUM_KEY)) || []; }
     catch(e) { return []; }
   }
-  function museumSave(data) {
-    try { localStorage.setItem(MUSEUM_KEY, JSON.stringify(data)); }
-    catch(e) { alert('存储空间不足'); }
+  function museumSave(data, silent) {
+    var toStore = data.slice(0, 50);
+    mtSafeSetItem(MUSEUM_KEY, JSON.stringify(toStore), true);
     // Supabase 跨设备同步：先推后拉，合并多设备数据
     if (typeof mtPushMuseum === 'function') {
-      mtPushMuseum(data).then(function() {
+      mtPushMuseum(toStore).then(function() {
         return typeof mtPullFromSupabase === 'function' ? mtPullFromSupabase() : Promise.resolve();
       }).then(function() {
         museumRender();
-      }).catch(function(err){ console.warn('[麦田] 推送博物馆失败:', err); });
+      }).catch(function(err){
+        console.warn('[麦田] 推送博物馆失败:', err);
+        if (!silent) showSyncStatus('❌ 同步失败: ' + (err.message||'网络错误'), 'red');
+      });
     }
   }
 
@@ -2605,16 +2638,19 @@
     try { return JSON.parse(localStorage.getItem(STORIES_KEY)) || []; }
     catch(e) { return []; }
   }
-  function storiesSave(data) {
-    try { localStorage.setItem(STORIES_KEY, JSON.stringify(data)); }
-    catch(e) { alert('存储空间不足'); }
+  function storiesSave(data, silent) {
+    var toStore = data.slice(0, 30);
+    mtSafeSetItem(STORIES_KEY, JSON.stringify(toStore), true);
     // Supabase 跨设备同步：先推后拉，合并多设备数据
     if (typeof mtPushStories === 'function') {
-      mtPushStories(data).then(function() {
+      mtPushStories(toStore).then(function() {
         return typeof mtPullFromSupabase === 'function' ? mtPullFromSupabase() : Promise.resolve();
       }).then(function() {
         storiesRender();
-      }).catch(function(err){ console.warn('[麦田] 推送故事失败:', err); });
+      }).catch(function(err){
+        console.warn('[麦田] 推送故事失败:', err);
+        if (!silent) showSyncStatus('❌ 同步失败: ' + (err.message||'网络错误'), 'red');
+      });
     }
   }
 
@@ -2630,8 +2666,10 @@
     Array.from(e.target.files).forEach(function(file) {
       var reader = new FileReader();
       reader.onload = function(ev) {
-        currentStoryImages.push(ev.target.result);
-        renderStoryImgPreviews();
+        compressImage(ev.target.result, 800, 0.75, function(compressed) {
+          currentStoryImages.push(compressed);
+          renderStoryImgPreviews();
+        });
       };
       reader.readAsDataURL(file);
     });
