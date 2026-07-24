@@ -866,6 +866,49 @@
       .project-card-inner { grid-template-columns: 1fr; }
       .project-visual { height: 160px; }
       .hero h1 { font-size: 32px; }
+
+      /* ===== 互动区移动端 ===== */
+      .interact-tabs {
+        gap: 4px; margin-bottom: 28px;
+        flex-wrap: nowrap; overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+      }
+      .interact-tabs::-webkit-scrollbar { display: none; }
+      .interact-tab {
+        padding: 10px 16px; font-size: 13px;
+        white-space: nowrap; flex-shrink: 0;
+        border-bottom-width: 2px;
+      }
+
+      /* 发布表单 */
+      .feed-form { padding: 16px; }
+      .feed-form-header { gap: 8px; }
+      .feed-name-input { width: 120px; font-size: 13px; }
+      .feed-form-actions { flex-wrap: wrap; gap: 8px; }
+      .feed-form-left { width: 100%; }
+      .feed-img-btn { font-size: 13px; padding: 8px 14px; }
+      .feed-form-actions .btn { width: 100%; font-size: 14px; padding: 10px; }
+
+      /* 动态卡片 */
+      .feed-card { padding: 16px; }
+      .feed-content { font-size: 14px; }
+
+      /* 烦恼博物馆 */
+      .museum-intro { flex-direction: column; padding: 24px 20px; }
+      .museum-intro-icon { font-size: 36px; }
+      .museum-submit-form { padding: 20px; }
+      .museum-form-row { flex-direction: column; gap: 8px; }
+      .museum-name-input { width: 100%; }
+      .museum-grid { grid-template-columns: 1fr; }
+      .museum-card { padding: 20px; }
+
+      /* 故事 */
+      .stories-intro { flex-direction: column; padding: 24px 20px; }
+      .stories-intro-icon { font-size: 36px; }
+      .stories-submit-form { padding: 20px; }
+      .story-card { padding: 20px; }
+      .story-card-images.multi { grid-template-columns: 1fr; }
     }
 
     /* ========== SCROLL ANIMATION ========== */
