@@ -2964,6 +2964,21 @@
   storiesRender();
 
   // 2. 后台同步 Supabase，完成后重新渲染
+  var _autoSyncTimer = null;
+  function startAutoSync() {
+    if (_autoSyncTimer) return;
+    _autoSyncTimer = setInterval(function() {
+      if (typeof mtPullFromSupabase !== 'function') return;
+      // 静默拉取，不显示状态
+      mtPullFromSupabase().then(function() {
+        feedRender(feedLoad());
+        museumRender();
+        storiesRender();
+      }).catch(function(){});
+    }, 30000); // 每 30 秒自动同步
+    console.log('[麦田] 自动同步已启动（30秒/次）');
+  }
+
   if (typeof mtInitSupabase === 'function') {
     showSyncBadge(true);
     showSyncStatus('正在同步云端数据...', '#4a90d9');
@@ -2972,6 +2987,7 @@
       museumRender();
       storiesRender();
       showSyncStatus('');
+      startAutoSync();
       console.log('[麦田] Supabase 同步完成，已刷新页面');
     }).catch(function(e) {
       showSyncStatus('自动同步失败，可点击🔄手动同步', '#e67e22');
