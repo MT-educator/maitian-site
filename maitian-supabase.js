@@ -25,6 +25,55 @@ var MT_INLINE_KEYS = {
   users:  'mt_users_v2'
 };
 
+// ============ 内存缓存（iOS localStorage 满时兜底）============
+var _mtMemCache = {};
+
+/**
+ * 智能保存：先尝试完整存 localStorage，超限时逐步去掉旧帖图片，始终缓存到内存
+ * data 是数组（未序列化），type 用于判断是否需要裁剪图片
+ */
+function mtSmartSave(key, data, type) {
+  // 始终缓存到内存（即使 localStorage 存不下，UI 也能渲染）
+  _mtMemCache[key] = data;
+
+  var json = JSON.stringify(data);
+  // 尝试完整保存
+  if (mtSafeSetItem(key, json, true)) return true;
+
+  // 失败 → 逐步裁剪图片（仅 feed / stories 有图片）
+  if (type === 'feed' || type === 'stories') {
+    console.warn('[麦田] localStorage 空间不足，开始裁剪旧帖图片 (key=' + key + ')');
+
+    // 第1步：最近15条保留图片，更早的去掉图片
+    var trimmed = data.map(function(p, i) {
+      if (i >= 15 && p.images && p.images.length > 0) {
+        return Object.assign({}, p, { images: [], _imgStripped: true });
+      }
+      return p;
+    });
+    if (mtSafeSetItem(key, JSON.stringify(trimmed), true)) return true;
+
+    // 第2步：全部去掉图片
+    trimmed = data.map(function(p) {
+      return Object.assign({}, p, { images: [], _imgStripped: true });
+    });
+    if (mtSafeSetItem(key, JSON.stringify(trimmed), true)) return true;
+
+    // 第3步：只保留最近10条，无图片无评论
+    trimmed = data.slice(0, 10).map(function(p) {
+      return Object.assign({}, p, { images: [], comments: [], _imgStripped: true });
+    });
+    if (mtSafeSetItem(key, JSON.stringify(trimmed), true)) return true;
+
+    console.warn('[麦田] 裁剪后仍无法存入 localStorage，仅使用内存缓存 (key=' + key + ')');
+  }
+  return false;
+}
+
+function mtGetMemCache(key) {
+  return _mtMemCache[key] || null;
+}
+
 // ============ 安全 localStorage 工具 ============
 function mtSafeSetItem(key, value, silent) {
   try {
@@ -181,7 +230,7 @@ async function mtPullFromSupabase() {
       var mergedFeed = mtMergeLocalWithRemote(MT_INLINE_KEYS.feed, feedData, function(p) {
         return { id:p.id, author:p.author, text:p.text, images:p.images, time:p.created_at, likes:p.likes, likedBy:p.liked_by, comments:p.comments };
       });
-      mtSafeSetItem(MT_INLINE_KEYS.feed, JSON.stringify(mergedFeed));
+      mtSmartSave(MT_INLINE_KEYS.feed, mergedFeed, 'feed');
     }
 
     // 拉取博物馆
@@ -217,7 +266,7 @@ async function mtPullFromSupabase() {
           return { id:p.id, author:p.author, anon:false, title:'', text:p.text||'', images:p.images||[], time:p.created_at, likes:p.likes||0, likedBy:p.liked_by||[], comments:p.comments||[], official:p.official||false, featured:false };
         }
       });
-      mtSafeSetItem(MT_INLINE_KEYS.stories, JSON.stringify(mergedStories));
+      mtSmartSave(MT_INLINE_KEYS.stories, mergedStories, 'stories');
     }
 
     // 拉取用户
