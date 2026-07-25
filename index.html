@@ -1976,8 +1976,8 @@
 </footer>
 
 <!-- v3: 不再需要 Supabase JS 库，改用原生 fetch -->
-<script src="maitian-supabase.js?v=20260724v3"></script>
-<script src="maitian-app.js?v=20260724v3"></script>
+<script src="maitian-supabase.js?v=20260725v1"></script>
+<script src="maitian-app.js?v=20260725v1"></script>
 <script>
   // 确保登录弹窗能工作（内联备份函数）
   if (typeof window.openAuthModal !== 'function') {
@@ -2090,13 +2090,23 @@
   }
 
   function feedLoad() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch(e) { return []; }
+    try {
+      var data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      if (data.length > 0) return data;
+    } catch(e) {}
+    // iOS 兜底：localStorage 存不下时从内存缓存读
+    if (typeof mtGetMemCache === 'function') {
+      var cached = mtGetMemCache(STORAGE_KEY);
+      if (cached && cached.length > 0) return cached;
+    }
+    return [];
   }
   function feedSave(data, silent) {
     // 限制本地只保留最近 50 条，避免存储膨胀
     var toStore = data.slice(0, 50);
-    var ok = mtSafeSetItem(STORAGE_KEY, JSON.stringify(toStore), true);
+    var ok = (typeof mtSmartSave === 'function')
+      ? mtSmartSave(STORAGE_KEY, toStore, 'feed')
+      : mtSafeSetItem(STORAGE_KEY, JSON.stringify(toStore), true);
     if (!ok && !silent) showSyncStatus('❌ 本地存储已满，建议清除缓存', 'red');
     // Supabase 跨设备同步：先推后拉，合并多设备数据
     if (typeof mtPushFeed === 'function') {
@@ -2635,12 +2645,22 @@
   const ADMIN_PWD = 'maitian2026';
 
   function storiesLoad() {
-    try { return JSON.parse(localStorage.getItem(STORIES_KEY)) || []; }
-    catch(e) { return []; }
+    try {
+      var data = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
+      if (data.length > 0) return data;
+    } catch(e) {}
+    // iOS 兜底：localStorage 存不下时从内存缓存读
+    if (typeof mtGetMemCache === 'function') {
+      var cached = mtGetMemCache(STORIES_KEY);
+      if (cached && cached.length > 0) return cached;
+    }
+    return [];
   }
   function storiesSave(data, silent) {
     var toStore = data.slice(0, 30);
-    mtSafeSetItem(STORIES_KEY, JSON.stringify(toStore), true);
+    var ok = (typeof mtSmartSave === 'function')
+      ? mtSmartSave(STORIES_KEY, toStore, 'stories')
+      : mtSafeSetItem(STORIES_KEY, JSON.stringify(toStore), true);
     // Supabase 跨设备同步：先推后拉，合并多设备数据
     if (typeof mtPushStories === 'function') {
       mtPushStories(toStore).then(function() {
