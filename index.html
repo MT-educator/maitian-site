@@ -50,6 +50,20 @@
     }
     .nav-links a:hover, .nav-links a.active { color: var(--earth); font-weight: 600; }
 
+    /* 汉堡菜单按钮（桌面隐藏，移动端显示） */
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 4px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--earth); border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+    .nav-hamburger.active span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
     /* ========== HERO ========== */
     .hero {
       min-height: 100vh;
@@ -857,9 +871,18 @@
 
     /* ========== RESPONSIVE ========== */
     @media (max-width: 768px) {
-      nav { padding: 12px 16px; }
-      .nav-links { gap: 10px; }
-      .nav-links a { font-size: 11px; letter-spacing: 0; }
+      nav { padding: 12px 16px; position: relative; }
+      .nav-hamburger { display: flex; }
+      .nav-links {
+        display: none; flex-direction: column; gap: 0;
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: #fff; padding: 8px 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border-top: 1px solid rgba(0,0,0,0.05);
+        z-index: 100;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 14px; padding: 10px 0; }
       .nav-logo { font-size: 17px; }
       section { padding: 50px 16px; }
       .about-grid { grid-template-columns: 1fr; }
@@ -958,8 +981,6 @@
     /* 超小屏（iPhone SE 等 320px 宽） */
     @media (max-width: 374px) {
       nav { padding: 10px 10px; }
-      .nav-links { gap: 6px; }
-      .nav-links a { font-size: 10px; }
       .interact-tab { padding: 8px 10px; font-size: 11px; }
       .interact-tabs::after { width: 20px; }
     }
@@ -1458,6 +1479,9 @@
     <li><a href="#commercial" onclick="doNavTo('commercial');return false;">麦田学习社区</a></li>
     <li><a href="#rural" onclick="doNavTo('rural');return false;">乡小阅读空间</a></li>
   </ul>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleNavMenu()">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-user" id="navUserBtn">
     <div class="nav-login-btn" id="navLoginBtn" onclick="openAuthModal('login')">登录</div>
     <div class="nav-user-logged" id="navUserLogged" style="display:none;">
@@ -1480,22 +1504,22 @@
     <!-- Row 1: fast, scroll right -->
     <div class="photo-row row-1">
       <div class="photo-track track-1">
-        <img src="images-web/DSC00558.JPG" alt=""><img src="images-web/DSC00565.JPG" alt=""><img src="images-web/DSC00610.JPG" alt=""><img src="images-web/DSC00628.JPG" alt=""><img src="images-web/DSC03730.JPG" alt=""><img src="images-web/DSC03793.JPG" alt="">
-        <img src="images-web/DSC00558.JPG" alt=""><img src="images-web/DSC00565.JPG" alt=""><img src="images-web/DSC00610.JPG" alt=""><img src="images-web/DSC00628.JPG" alt=""><img src="images-web/DSC03730.JPG" alt=""><img src="images-web/DSC03793.JPG" alt="">
+        <img src="images-web/DSC00558.JPG" alt="" loading="lazy"><img src="images-web/DSC00565.JPG" alt="" loading="lazy"><img src="images-web/DSC00610.JPG" alt="" loading="lazy"><img src="images-web/DSC00628.JPG" alt="" loading="lazy"><img src="images-web/DSC03730.JPG" alt="" loading="lazy"><img src="images-web/DSC03793.JPG" alt="" loading="lazy">
+        <img src="images-web/DSC00558.JPG" alt="" loading="lazy"><img src="images-web/DSC00565.JPG" alt="" loading="lazy"><img src="images-web/DSC00610.JPG" alt="" loading="lazy"><img src="images-web/DSC00628.JPG" alt="" loading="lazy"><img src="images-web/DSC03730.JPG" alt="" loading="lazy"><img src="images-web/DSC03793.JPG" alt="" loading="lazy">
       </div>
     </div>
     <!-- Row 2: medium, scroll left -->
     <div class="photo-row row-2">
       <div class="photo-track track-2">
-        <img src="images-web/DSC03887.JPG" alt=""><img src="images-web/DSC04095.JPG" alt=""><img src="images-web/DSC07862.JPG" alt=""><img src="images-web/DSC07952.JPG" alt=""><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt=""><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="">
-        <img src="images-web/DSC03887.JPG" alt=""><img src="images-web/DSC04095.JPG" alt=""><img src="images-web/DSC07862.JPG" alt=""><img src="images-web/DSC07952.JPG" alt=""><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt=""><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="">
+        <img src="images-web/DSC03887.JPG" alt="" loading="lazy"><img src="images-web/DSC04095.JPG" alt="" loading="lazy"><img src="images-web/DSC07862.JPG" alt="" loading="lazy"><img src="images-web/DSC07952.JPG" alt="" loading="lazy"><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt="" loading="lazy"><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="" loading="lazy">
+        <img src="images-web/DSC03887.JPG" alt="" loading="lazy"><img src="images-web/DSC04095.JPG" alt="" loading="lazy"><img src="images-web/DSC07862.JPG" alt="" loading="lazy"><img src="images-web/DSC07952.JPG" alt="" loading="lazy"><img src="images-web/group_1737385865224_NK1KaRFQqyCTOp35.JPG" alt="" loading="lazy"><img src="images-web/group_1737463991373_712tae9ynketP7mM.jpg" alt="" loading="lazy">
       </div>
     </div>
     <!-- Row 3: slow, scroll right -->
     <div class="photo-row row-3">
       <div class="photo-track track-3">
-        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt=""><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt=""><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt=""><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt=""><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="">
-        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt=""><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt=""><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt=""><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt=""><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="">
+        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt="" loading="lazy"><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt="" loading="lazy"><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt="" loading="lazy"><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt="" loading="lazy"><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="" loading="lazy">
+        <img src="images-web/group_1737465322248_bIzxZ0rSYXFx7CLn.JPG" alt="" loading="lazy"><img src="images-web/group_1737466603739_LyFpx3G5pfYKtiQp.JPG" alt="" loading="lazy"><img src="images-web/group_1737466686935_9tvbnmz4pQnE01PE.JPG" alt="" loading="lazy"><img src="images-web/group_1737467158711_4WbKAxbWS3WnUv1d.JPG" alt="" loading="lazy"><img src="images-web/group_1737729543328_rRIUxv9Lcbj5DjU4.JPG" alt="" loading="lazy">
       </div>
     </div>
   </div>
@@ -1627,29 +1651,29 @@
   <div class="fade-up">
     <div class="section-tag">关于麦田</div>
     <h2 class="section-title">关于麦田</h2>
-    <img class="section-banner" src="images-web/feishu/about_header.jpg" alt="麦田教育">
+    <img class="section-banner" src="images-web/feishu/about_header.jpg" alt="麦田教育" loading="lazy">
   </div>
 
   <div class="fade-up">
     <h3 class="about-sub-title">我们对人的信念</h3>
     <div class="belief-grid">
       <div class="belief-card">
-        <img class="belief-card-img" src="images-web/feishu/belief_kids.jpg" alt="对于孩子">
+        <img class="belief-card-img" src="images-web/feishu/belief_kids.jpg" alt="对于孩子" loading="lazy">
         <h4>对于孩子</h4>
         <p>我们相信孩子带着自己的感受/思考来到这个世界，ta们需要在真实的参与中，建构自己的认知/心智/情感系统。</p>
       </div>
       <div class="belief-card">
-        <img class="belief-card-img" src="images-web/feishu/belief_parents.jpg" alt="对于养育者">
+        <img class="belief-card-img" src="images-web/feishu/belief_parents.jpg" alt="对于养育者" loading="lazy">
         <h4>对于养育者</h4>
         <p>我们相信每个养育者都有为孩子好的意图，也有过往的经历和学习，而且在自己的价值系统下，选择最佳的行动路径。</p>
       </div>
       <div class="belief-card">
-        <img class="belief-card-img" src="images-web/feishu/belief_partners.jpg" alt="对于工作伙伴">
+        <img class="belief-card-img" src="images-web/feishu/belief_partners.jpg" alt="对于工作伙伴" loading="lazy">
         <h4>对于工作伙伴</h4>
         <p>我们希望麦田作为一份工作，不只是一份收入，还有潜力成为伙伴的创造价值和探索可能性的地方。</p>
       </div>
       <div class="belief-card">
-        <img class="belief-card-img" src="images-web/feishu/belief_society.jpg" alt="对于社会">
+        <img class="belief-card-img" src="images-web/feishu/belief_society.jpg" alt="对于社会" loading="lazy">
         <h4>对于社会</h4>
         <p>我们认为，社会属于每一个生活在其中的人，我们希望生活在一个什么样的社会，就应该与孩子们一起去把它创造出来。</p>
       </div>
@@ -1687,9 +1711,9 @@
     <div class="section-tag">麦田学习社区</div>
     <h2 class="section-title">与孩子们一起学习，一起生活</h2>
     <div class="photo-gallery">
-      <img src="images-web/feishu/community_1.jpg" alt="麦田学习社区">
-      <img src="images-web/feishu/community_2.jpg" alt="麦田学习社区">
-      <img src="images-web/feishu/community_3.jpg" alt="麦田学习社区">
+      <img src="images-web/feishu/community_1.jpg" alt="麦田学习社区" loading="lazy">
+      <img src="images-web/feishu/community_2.jpg" alt="麦田学习社区" loading="lazy">
+      <img src="images-web/feishu/community_3.jpg" alt="麦田学习社区" loading="lazy">
     </div>
   </div>
 
@@ -1710,7 +1734,7 @@
     <h3 class="about-sub-title" style="margin-top:48px;">我们提供的内容</h3>
     <div class="series-grid">
       <div class="series-card">
-        <img class="series-card-img" src="images-web/feishu/series_weekend.jpg" alt="周末系列">
+        <img class="series-card-img" src="images-web/feishu/series_weekend.jpg" alt="周末系列" loading="lazy">
         <h4>周末系列</h4>
         <ul>
           <li>山野徒步系列</li>
@@ -1720,14 +1744,14 @@
         </ul>
       </div>
       <div class="series-card">
-        <img class="series-card-img" src="images-web/feishu/series_weekday.jpg" alt="周中系列">
+        <img class="series-card-img" src="images-web/feishu/series_weekday.jpg" alt="周中系列" loading="lazy">
         <h4>周中系列</h4>
         <ul>
           <li>Gap Days</li>
         </ul>
       </div>
       <div class="series-card">
-        <img class="series-card-img" src="images-web/feishu/series_summer.jpg" alt="寒暑假系列">
+        <img class="series-card-img" src="images-web/feishu/series_summer.jpg" alt="寒暑假系列" loading="lazy">
         <h4>寒暑假系列</h4>
         <ul>
           <li>托管日间营</li>
@@ -1735,7 +1759,7 @@
         </ul>
       </div>
       <div class="series-card">
-        <img class="series-card-img" src="images-web/feishu/series_holiday.jpg" alt="小假期系列">
+        <img class="series-card-img" src="images-web/feishu/series_holiday.jpg" alt="小假期系列" loading="lazy">
         <h4>小假期系列</h4>
         <ul>
           <li>五一儿童节</li>
@@ -1743,7 +1767,7 @@
         </ul>
       </div>
       <div class="series-card">
-        <img class="series-card-img" src="images-web/feishu/series_family.jpg" alt="家庭系列">
+        <img class="series-card-img" src="images-web/feishu/series_family.jpg" alt="家庭系列" loading="lazy">
         <h4>家庭系列</h4>
         <ul>
           <li>四季家庭游</li>
@@ -1761,9 +1785,9 @@
     <h2 class="section-title">与孩子们共同打造一个小地方</h2>
     <p class="section-desc">我们与乡村小学一起，改造和运营学校的阅读馆，招募驻校志愿者以学期为单位，参与支持空间的日常运营。</p>
     <div class="rural-gallery">
-      <img src="images-web/feishu/rural_1.jpg" alt="乡小阅读空间">
-      <img src="images-web/feishu/rural_2.jpg" alt="乡小阅读空间">
-      <img src="images-web/feishu/rural_3.jpg" alt="乡小阅读空间">
+      <img src="images-web/feishu/rural_1.jpg" alt="乡小阅读空间" loading="lazy">
+      <img src="images-web/feishu/rural_2.jpg" alt="乡小阅读空间" loading="lazy">
+      <img src="images-web/feishu/rural_3.jpg" alt="乡小阅读空间" loading="lazy">
     </div>
   </div>
 
@@ -1976,8 +2000,8 @@
 </footer>
 
 <!-- v3: 不再需要 Supabase JS 库，改用原生 fetch -->
-<script src="maitian-supabase.js?v=20260725v1"></script>
-<script src="maitian-app.js?v=20260725v1"></script>
+<script src="maitian-supabase.js?v=20260725v2"></script>
+<script src="maitian-app.js?v=20260725v2"></script>
 <script>
   // 确保登录弹窗能工作（内联备份函数）
   if (typeof window.openAuthModal !== 'function') {
@@ -2036,6 +2060,25 @@
 
   // 兼容旧调用
   function scrollToSec(id) { doNavTo(id); }
+
+  // 移动端汉堡菜单
+  function toggleNavMenu() {
+    var links = document.getElementById('navLinks');
+    var burger = document.getElementById('navHamburger');
+    if (links) links.classList.toggle('open');
+    if (burger) burger.classList.toggle('active');
+  }
+  // 导航后关闭菜单
+  (function(){
+    var origDoNavTo = doNavTo;
+    doNavTo = function(id) {
+      var links = document.getElementById('navLinks');
+      var burger = document.getElementById('navHamburger');
+      if (links) links.classList.remove('open');
+      if (burger) burger.classList.remove('active');
+      origDoNavTo(id);
+    };
+  })();
   function scrollToInteractTab(tab) {
     doNavTo('interact');
     setTimeout(function() { switchTab(tab); }, 250);
@@ -2148,8 +2191,22 @@
       const reader = new FileReader();
       reader.onload = function(ev) {
         compressImage(ev.target.result, 800, 0.75, function(compressed) {
-          currentImages.push(compressed);
-          renderImagePreviews();
+          // 先尝试上传到 Supabase Storage，失败则降级为 base64
+          if (typeof mtUploadImage === 'function') {
+            // 先用 base64 占位显示预览
+            currentImages.push(compressed);
+            renderImagePreviews();
+            // 异步上传，成功后替换为 URL
+            mtUploadImage(compressed).then(function(url) {
+              if (url) {
+                var idx = currentImages.indexOf(compressed);
+                if (idx !== -1) currentImages[idx] = url;
+              }
+            }).catch(function(){ /* 保留 base64 */ });
+          } else {
+            currentImages.push(compressed);
+            renderImagePreviews();
+          }
         });
       };
       reader.readAsDataURL(file);
@@ -2163,7 +2220,7 @@
     c.style.display = 'flex';
     c.innerHTML = currentImages.map((img, idx) =>
       '<div class="feed-img-thumb-wrap">' +
-        '<img src="' + img + '">' +
+        '<img src="' + img + '" loading="lazy">' +
         '<button class="feed-img-remove" onclick="removeImage(' + idx + ')">✕</button>' +
       '</div>'
     ).join('');
@@ -2268,19 +2325,19 @@
   function renderPostImagesPreview(post) {
     var imgs = post.images || [];
     if (imgs.length === 0 && post.image) {
-      return '<div class="feed-card-image" style="max-height:200px;overflow:hidden;border-radius:8px;transform:rotate(-0.5deg);"><img src="' + escHtml(post.image) + '" style="width:100%;height:100%;object-fit:cover;"></div>';
+      return '<div class="feed-card-image" style="max-height:200px;overflow:hidden;border-radius:8px;transform:rotate(-0.5deg);"><img src="' + escHtml(post.image) + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy"></div>';
     }
     if (imgs.length === 0) return '';
     // 只有一张图：直接显示，加一点旋转
     if (imgs.length === 1) {
-      return '<div class="feed-card-image" style="max-height:200px;overflow:hidden;border-radius:8px;transform:rotate(-0.5deg);"><img src="' + escHtml(imgs[0]) + '" style="width:100%;height:100%;object-fit:cover;"></div>';
+      return '<div class="feed-card-image" style="max-height:200px;overflow:hidden;border-radius:8px;transform:rotate(-0.5deg);"><img src="' + escHtml(imgs[0]) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>';
     }
     // 多张图：堆叠效果
     var back2 = imgs.length >= 3
       ? '<div class="stack-photo stack-back2"></div>'
       : '';
     var back1 = '<div class="stack-photo stack-back1"></div>';
-    var front = '<div class="stack-photo stack-front"><img src="' + escHtml(imgs[0]) + '"></div>';
+    var front = '<div class="stack-photo stack-front"><img src="' + escHtml(imgs[0]) + '" loading="lazy"></div>';
     var count = '<div class="stack-count">+' + (imgs.length - 1) + '张</div>';
     return '<div class="feed-card-image-stack">' + back2 + back1 + front + count + '</div>';
   }
@@ -2288,12 +2345,12 @@
   function renderPostImages(post) {
     var imgs = post.images || [];
     if (imgs.length === 0 && post.image) {
-      return '<div class="feed-card-image"><img src="' + escHtml(post.image) + '"></div>';
+      return '<div class="feed-card-image"><img src="' + escHtml(post.image) + '" loading="lazy"></div>';
     }
     if (imgs.length === 0) return '';
     var cls = 'feed-card-images' + (imgs.length > 1 ? ' multi' : '');
     var items = imgs.map(function(s) {
-      return '<div class="feed-card-image"><img src="' + escHtml(s) + '"></div>';
+      return '<div class="feed-card-image"><img src="' + escHtml(s) + '" loading="lazy"></div>';
     }).join('');
     return '<div class="' + cls + '">' + items + '</div>';
   }
@@ -2687,8 +2744,20 @@
       var reader = new FileReader();
       reader.onload = function(ev) {
         compressImage(ev.target.result, 800, 0.75, function(compressed) {
-          currentStoryImages.push(compressed);
-          renderStoryImgPreviews();
+          // 先尝试上传到 Supabase Storage，失败则降级为 base64
+          if (typeof mtUploadImage === 'function') {
+            currentStoryImages.push(compressed);
+            renderStoryImgPreviews();
+            mtUploadImage(compressed).then(function(url) {
+              if (url) {
+                var idx = currentStoryImages.indexOf(compressed);
+                if (idx !== -1) currentStoryImages[idx] = url;
+              }
+            }).catch(function(){});
+          } else {
+            currentStoryImages.push(compressed);
+            renderStoryImgPreviews();
+          }
         });
       };
       reader.readAsDataURL(file);
@@ -2702,7 +2771,7 @@
     c.style.display = 'flex';
     c.innerHTML = currentStoryImages.map(function(img, idx) {
       return '<div class="feed-img-thumb-wrap">' +
-        '<img src="' + img + '">' +
+        '<img src="' + img + '" loading="lazy">' +
         '<button class="feed-img-remove" onclick="removeStoryImage(' + idx + ')">✕</button>' +
       '</div>';
     }).join('');
@@ -2798,7 +2867,7 @@
     if (imgs.length === 0) return '';
     var cls = 'story-card-images' + (imgs.length > 1 ? ' multi' : '');
     var items = imgs.map(function(s) {
-      return '<div class="story-card-image"><img src="' + escHtml(s) + '"></div>';
+      return '<div class="story-card-image"><img src="' + escHtml(s) + '" loading="lazy"></div>';
     }).join('');
     return '<div class="' + cls + '">' + items + '</div>';
   }
