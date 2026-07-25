@@ -152,6 +152,73 @@ function mtUpsert(table, rows, conflictCol) {
   });
 }
 
+// ============ 图片上传到 Storage ============
+// base64 → blob → 上传到 Supabase Storage → 返回公共 URL
+// 如果 Storage 未配置或上传失败，返回 null（调用方降级为 base64）
+var MT_STORAGE_BASE = MT_SUPABASE_URL + '/storage/v1';
+var MT_STORAGE_BUCKET = 'images';
+
+async function mtUploadImage(base64DataUrl) {
+  try {
+    // base64 → blob
+    var parts = base64DataUrl.split(',');
+    var mime = parts[0].match(/:(.*?);/)[1] || 'image/jpeg';
+    var bstr = atob(parts[1]);
+    var n = bstr.length;
+    var u8arr = new Uint8Array(n);
+    while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+    var blob = new Blob([u8arr], { type: mime });
+
+    // 生成唯一文件名
+    var ext = mime === 'image/png' ? 'png' : 'jpg';
+    var filename = Date.now() + '-' + Math.random().toString(36).substr(2, 9) + '.' + ext;
+
+    // 上传到 Storage（raw binary）
+    var resp = await fetch(MT_STORAGE_BASE + '/object/' + MT_STORAGE_BUCKET + '/' + filename, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + MT_SUPABASE_KEY,
+        'apikey': MT_SUPABASE_KEY,
+        'Content-Type': mime,
+        'x-upsert': 'true'
+      },
+      body: blob
+    });
+
+    if (!resp.ok) {
+      var errTxt = await resp.text();
+      throw new Error('Storage ' + resp.status + ': ' + errTxt.substring(0, 100));
+    }
+
+    // 返回公共 URL
+    var publicUrl = MT_STORAGE_BASE + '/object/public/' + MT_STORAGE_BUCKET + '/' + filename;
+    console.log('[麦田] 图片已上传到 Storage:', filename);
+    return publicUrl;
+  } catch(e) {
+    console.warn('[麦田] Storage 上传失败，将使用 base64:', e.message);
+    return null;
+  }
+}
+
+// 批量上传图片（返回 URL 数组，失败的保留 base64）
+async function mtUploadImages(base64Array) {
+  if (!base64Array || base64Array.length === 0) return [];
+  var results = [];
+  for (var i = 0; i < base64Array.length; i++) {
+    var img = base64Array[i];
+    if (img && img.indexOf('http') === 0) {
+      // 已经是 URL，跳过
+      results.push(img);
+    } else if (img && img.indexOf('data:') === 0) {
+      var url = await mtUploadImage(img);
+      results.push(url || img);  // 失败则保留 base64
+    } else {
+      results.push(img);
+    }
+  }
+  return results;
+}
+
 // ============ 合并工具 ============
 function mtMergeLocalWithRemote(localKey, remoteArr, mapFn) {
   var local = [];
